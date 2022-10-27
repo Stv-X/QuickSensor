@@ -51,7 +51,7 @@ struct SidebarNavigationList: View {
 #else
                             .foregroundColor(store.selection == 0 ? .white : .red)
 #endif
-                        Text("\(NSNumber(value: Double(items.last!.temperature) / 10))°")
+                        Text(items.isEmpty ? "--" : "\(NSNumber(value: Double(items.last!.temperature) / 10))°")
                             .frame(width: 42)
 #if os(macOS)
                             .foregroundColor(store.selection == 0 ? .white : nil)
@@ -65,7 +65,7 @@ struct SidebarNavigationList: View {
 #else
                             .foregroundColor(store.selection == 0 ? .white : .blue)
 #endif
-                        Text("\(NSNumber(value: Double(items.last!.humidity) / 10))%")
+                        Text(items.isEmpty ? "--" : "\(NSNumber(value: Double(items.last!.humidity) / 10))%")
                             .frame(width: 42)
 #if os(macOS)
                             .foregroundColor(store.selection == 0 ? .white : nil)
@@ -90,7 +90,6 @@ struct SidebarNavigationList: View {
             .font(.footnote)
         }
     }
-    
 }
 
 struct SidebarNavigationList_Previews: PreviewProvider {

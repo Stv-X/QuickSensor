@@ -71,15 +71,16 @@ struct THSensorMonitor: View {
                     .chartYAxis {
                         AxisMarks(values: .stride(by: 20)) { value in
                             AxisGridLine()
-                                        AxisValueLabel("""
-                                        \(value.as(PlottableTemperatureMeasurement.self)!.measurement.converted(to: .celsius),
-                                        format: .measurement(
-                                            width: .narrow,
-                                            numberFormatStyle: .number.precision(
-                                                .fractionLength(0))
-                                            )
-                                        )
-                                        """)
+//                                        AxisValueLabel("""
+//                                        \(value.as(PlottableTemperatureMeasurement.self)!.measurement.converted(to: .celsius),
+//                                        format: .measurement(
+//                                            width: .narrow,
+//                                            numberFormatStyle: .number.precision(
+//                                                .fractionLength(0))
+//                                            )
+//                                        )
+//                                        """)
+                            AxisValueLabel(LocalizedStringKey(stringLiteral: (value.index == 2 || value.index == 4) ? "" : "\(value.index * 20 - 20)°C"))
                         }
                     }
                     .chartYScale(domain: -20...80)
@@ -115,9 +116,9 @@ struct THSensorMonitor: View {
                     }
                     .chartXAxis(.hidden)
                     .chartYAxis {
-                        AxisMarks(values: .stride(by: 20)) { value in
+                        AxisMarks(values: .stride(by: 25)) { value in
                             AxisGridLine()
-                            AxisValueLabel(LocalizedStringKey(stringLiteral: "\(value.index * 20)%"))
+                            AxisValueLabel(LocalizedStringKey(stringLiteral: value.index % 2 == 0 ? "\(value.index * 25)%" : ""))
                         }
                     }
                     .chartYScale(domain: 0...100)
