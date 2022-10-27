@@ -29,3 +29,5 @@
 "Humidity" = "湿度";
 "Timestamp" = "时间戳";
 "Copy" = "拷贝";
+"Illuminated" = "有光照";
+"Not Illuminated" = "无光照";

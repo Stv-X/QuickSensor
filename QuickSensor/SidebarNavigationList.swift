@@ -85,7 +85,7 @@ struct SidebarNavigationList: View {
                 Image(systemName: "lightbulb.fill")
                     .foregroundColor(.yellow)
                     .symbolRenderingMode(.multicolor)
-                Text("On")
+                Text("Illuminated")
             }
             .font(.footnote)
         }

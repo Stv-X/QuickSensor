@@ -82,6 +82,7 @@ struct THSensorMonitor: View {
                                         """)
                         }
                     }
+                    .chartYScale(domain: -20...80)
 #if os(iOS)
                     .chartYAxis(horizontalSizeClass == .compact ? .hidden : .visible)
 #endif
@@ -119,6 +120,7 @@ struct THSensorMonitor: View {
                             AxisValueLabel(LocalizedStringKey(stringLiteral: "\(value.index * 20)%"))
                         }
                     }
+                    .chartYScale(domain: 0...100)
 #if os(iOS)
                     .chartYAxis(horizontalSizeClass == .compact ? .hidden : .visible)
 #endif

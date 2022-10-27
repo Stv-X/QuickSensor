@@ -21,6 +21,8 @@
 		AA5BA7DF29058AAA00C266AE /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7DE29058AAA00C266AE /* Persistence.swift */; };
 		AA5BA7E229058ABD00C266AE /* QuickSensor.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7E029058ABD00C266AE /* QuickSensor.xcdatamodeld */; };
 		AA5BA7E529058B4B00C266AE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA5BA7E729058B4B00C266AE /* Localizable.strings */; };
+		AAABBAAF290A366800775A0F /* IlluminanceSensorMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */; };
+		AAABBAB1290A379500775A0F /* IlluminanceSensorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +43,8 @@
 		AA5BA7E129058ABD00C266AE /* QuickSensor.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QuickSensor.xcdatamodel; sourceTree = "<group>"; };
 		AA5BA7E629058B4B00C266AE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		AA5BA7E829058B5000C266AE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorMonitor.swift; sourceTree = "<group>"; };
+		AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorSupport.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +80,8 @@
 				AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */,
 				AA5BA7CB29058A6000C266AE /* ContentView.swift */,
 				AA0B31D729064EA60098BB49 /* SidebarNavigationList.swift */,
+				AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */,
+				AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */,
 				AA0B31D92906B5D70098BB49 /* NavigationDetailView.swift */,
 				AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */,
 				AA0B31D529064E790098BB49 /* THSensorView.swift */,
@@ -172,12 +178,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAABBAAF290A366800775A0F /* IlluminanceSensorMonitor.swift in Sources */,
 				AA5BA7CC29058A6000C266AE /* ContentView.swift in Sources */,
 				AA5BA7D929058A8A00C266AE /* THSensorMonitor.swift in Sources */,
 				AA0B31DC2906B7720098BB49 /* LaunchScreen.swift in Sources */,
 				AA5BA7E229058ABD00C266AE /* QuickSensor.xcdatamodeld in Sources */,
 				AA5BA7DD29058AA000C266AE /* THSensorSupport.swift in Sources */,
 				AA0B31D829064EA60098BB49 /* SidebarNavigationList.swift in Sources */,
+				AAABBAB1290A379500775A0F /* IlluminanceSensorSupport.swift in Sources */,
 				AA5BA7DF29058AAA00C266AE /* Persistence.swift in Sources */,
 				AA5BA7CA29058A6000C266AE /* QuickSensorApp.swift in Sources */,
 				AA0B31D629064E790098BB49 /* THSensorView.swift in Sources */,
