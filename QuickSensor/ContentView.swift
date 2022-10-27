@@ -2,20 +2,29 @@
 //  ContentView.swift
 //  QuickSensor
 //
-//  Created by 徐嗣苗 on 2022/10/23.
+//  Created by 徐嗣苗 on 2022/10/21.
 //
 
 import SwiftUI
+class NavigationStore: ObservableObject {
+    @Published var selection: Int?
+}
 
 struct ContentView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    @StateObject var store = NavigationStore()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationSplitView {
+            SidebarNavigationList()
+            #if os(macOS)
+                .navigationSplitViewColumnWidth(min: 130, ideal: 180, max: 200)
+            #endif
+        } detail: {
+            NavigationDetailView()
         }
-        .padding()
+        .environmentObject(store)
     }
 }
 

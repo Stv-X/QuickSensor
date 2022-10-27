@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct QuickSensorApp: App {
+    let persistenceController = PersistenceController.shared
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+#if os(macOS)
+                .frame(minWidth: 680)
+#endif
         }
     }
 }

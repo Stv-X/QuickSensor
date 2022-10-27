@@ -1,0 +1,31 @@
+/* 
+  Localizable.strings
+  QuickSensor
+
+  Created by 徐嗣苗 on 2022/10/23.
+  
+*/
+
+"T&H" = "温/湿度";
+"T&H Sensor" = "温/湿度传感器";
+"Illuminance Sensor" = "光照传感器";
+"Illumination" = "光照";
+"Details" = "详细信息";
+"Refresh" = "刷新";
+"Options" = "选项";
+"COM Port" = "串口选择";
+"Baud Rate" = "波特率";
+"Confirm" = "确认";
+"Cancel" = "取消";
+"Raw Data" = "原始数据";
+"Humidity Raw Data" = "湿度原始数据";
+"Temperature Raw Data" = "温度原始数据";
+"Verify Bit" = "校验位";
+"Auto" = "自动";
+"Pause" = "暂停";
+"Stop" = "停止";
+"Records" = "记录";
+"Temperature" = "温度";
+"Humidity" = "湿度";
+"Timestamp" = "时间戳";
+"Copy" = "拷贝";
