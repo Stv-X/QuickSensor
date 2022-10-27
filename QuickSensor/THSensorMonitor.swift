@@ -71,15 +71,6 @@ struct THSensorMonitor: View {
                     .chartYAxis {
                         AxisMarks(values: .stride(by: 20)) { value in
                             AxisGridLine()
-//                                        AxisValueLabel("""
-//                                        \(value.as(PlottableTemperatureMeasurement.self)!.measurement.converted(to: .celsius),
-//                                        format: .measurement(
-//                                            width: .narrow,
-//                                            numberFormatStyle: .number.precision(
-//                                                .fractionLength(0))
-//                                            )
-//                                        )
-//                                        """)
                             AxisValueLabel(LocalizedStringKey(stringLiteral: (value.index == 2 || value.index == 4) ? "" : "\(value.index * 20 - 20)°C"))
                         }
                     }
@@ -420,7 +411,7 @@ struct THSensorMonitor: View {
         
         organizedData.isVerified = verifiedTHData(from: formattedRawData)
         organizedData.humidity.value = Double(humidityRaw.toDec()) / 10
-        organizedData.temperature.value = Double(temperatureRaw.toTDec()) / 10
+        organizedData.temperature.value = Double(temperatureRaw.toDHT22Dec()) / 10
         
         return organizedData
     }

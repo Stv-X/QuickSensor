@@ -9,6 +9,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 import Charts
 
+//温度等级，用于绘制监视器视图中的动态温度计符号
+
 enum TemperatureLevel: String, CaseIterable, Identifiable {
     case low
     case medium
@@ -17,17 +19,22 @@ enum TemperatureLevel: String, CaseIterable, Identifiable {
     var id: Self { self }
 }
 
+//温度记录，为温度柱状图表提供数据
+
 struct TemperatureRecord: Identifiable {
     var value: Double
     var timestamp: Date
     var id = UUID()
 }
 
+//湿度记录，为湿度柱状图表提供数据
+
 struct HumidityRecord: Identifiable {
     var value: Double
     var timestamp: Date
     var id = UUID()
 }
+
 
 struct TemperatureState: Equatable {
     var value: Double
@@ -36,6 +43,8 @@ struct TemperatureState: Equatable {
 struct HumidityState: Equatable {
     var value: Double
 }
+
+
 
 struct OrganizedData {
     var temperature: TemperatureState
@@ -58,6 +67,8 @@ struct THSensorMonitorOptions {
     var baudRate: Int = availableBaudRates.last!
 }
 
+
+//随机生成满足校验要求的温湿度二进制数据字符串
 func randomTHSensorRawData() -> String {
     var data = ""
     var temperature: Int
@@ -97,6 +108,10 @@ func randomTHSensorRawData() -> String {
     return data
 }
 
+//将十进制温湿度转换为满足 DHT22 协议的 16 位二进制原始数据字符串
+//输入: 温湿度的十进制原始数据（比标准单位数据大 10 倍）
+//例：rawData(of: 386) -> "0000000100001101"
+
 func rawData(of data: Int) -> String {
     var rawData = ""
     if data < 0 {
@@ -104,6 +119,7 @@ func rawData(of data: Int) -> String {
     } else {
         rawData = data.binary
     }
+    
     if data < 0 {
         while rawData.count < 15 {
             rawData = "0" + rawData
@@ -116,8 +132,12 @@ func rawData(of data: Int) -> String {
             rawData = "0" + rawData
         }
     }
+    
     return rawData
 }
+
+//从 16 位二进制原始数据字符串中获取高 8 位
+//例: highBit(of: "0000000100001101") -> "00000001"
 
 func highBit(of rawData: String) -> String {
     var highBit = ""
@@ -129,6 +149,9 @@ func highBit(of rawData: String) -> String {
     return highBit
 }
 
+//从 16 位二进制原始数据字符串中获取低 8 位
+//例: highBit(of: "0000000100001101") -> "00001101"
+
 func lowBit(of rawData: String) -> String {
     var lowBit = ""
     
@@ -138,6 +161,8 @@ func lowBit(of rawData: String) -> String {
     
     return lowBit
 }
+
+//将字符串拷贝到系统剪贴板
 
 func copyToClipBoard(textToCopy: String) {
 #if os(macOS)
@@ -157,6 +182,12 @@ extension Int: Identifiable {
 }
 
 extension THRawData {
+    
+    //将格式化后的原始数据对应地记录到 THRawData 的各项属性（湿度高8位、湿度低8位、温度高8位、温度低8位、校验位）中
+    //例：
+    // let formattedRaw = [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0]
+    // rawData.map(from: formattedRaw) -> THRawData(humidityHigh: "00000010", humidityLow: "10010010", temperatureHigh: "00000001", temperatureLow: "00001101", verifyBit: "10100010")
+    
     mutating func map(from formattedRawData: [Int]) {
         for i in 0..<8 {
             self.humidityHigh += "\(formattedRawData[i])"
@@ -170,6 +201,10 @@ extension THRawData {
 
 
 extension String {
+    
+    //判断字符串是否为二进制数字
+    //例: "01011001".isBinary() -> true
+    
     func isBinary() -> Bool {
         var isBinary = true
         
@@ -179,6 +214,9 @@ extension String {
         
         return isBinary
     }
+    
+    //将二进制字符串转换为每 4 位空一格的易读形式
+    //例: "01011001".readableBinary() -> "0101 1001"
     
     func readableBinary() -> String {
         if self.isBinary() {
@@ -197,6 +235,9 @@ extension String {
         }
     }
     
+    //将二进制字符串转换为十进制数字
+    //例: "01011001".toDec() -> 89
+    
     mutating func toDec() -> Int {
         if self.isBinary() {
             var sum = 0
@@ -210,7 +251,12 @@ extension String {
         }
     }
     
-    mutating func toTDec() -> Int {
+    //将二进制字符串转换为满足 DHT22 传感器协议的十进制数字
+    //                    [当温度低于 0 °C 时温度数据的最高位置 1]
+    //例: "01011001".toTDec() -> 89
+    //    "11011001".toTDec() -> -89
+    
+    mutating func toDHT22Dec() -> Int {
         if self.isBinary() {
             var sum = 0
             var isNegative = false
@@ -248,7 +294,11 @@ extension String {
 }
 
 extension Int {
+    
+    //将整型数字转换为二进制字符串
+    //例: 89.binary() -> "01011001"
     var binary: String {
         return String(self, radix: 2)
     }
+    
 }
