@@ -252,22 +252,3 @@ extension Int {
         return String(self, radix: 2)
     }
 }
-
-struct PlottableTemperatureMeasurement<UnitType: Unit> {
-    var measurement: Measurement<UnitType>
-}
-
-extension PlottableTemperatureMeasurement: Plottable where UnitType == UnitTemperature {
-    var primitivePlottable: Double {
-        self.measurement.converted(to: .celsius).value
-    }
-    
-    init?(primitivePlottable: Double) {
-        self.init(
-            measurement: Measurement(
-                value: primitivePlottable,
-                unit: .celsius
-            )
-        )
-    }
-}
