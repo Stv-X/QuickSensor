@@ -58,6 +58,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AA5A8721290AD134002B5F63 /* IlluminanceSensor */ = {
+			isa = PBXGroup;
+			children = (
+				AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */,
+				AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */,
+			);
+			path = IlluminanceSensor;
+			sourceTree = "<group>";
+		};
+		AA5A8722290AD149002B5F63 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				AA0B31D729064EA60098BB49 /* SidebarNavigationList.swift */,
+				AA0B31D92906B5D70098BB49 /* NavigationDetailView.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		AA5A8723290AD165002B5F63 /* THSensor */ = {
+			isa = PBXGroup;
+			children = (
+				AA0B31D529064E790098BB49 /* THSensorView.swift */,
+				AA5BA7D829058A8A00C266AE /* THSensorMonitor.swift */,
+				AA5BA7DA29058A9500C266AE /* THSensorRecords.swift */,
+				AA5BA7DC29058AA000C266AE /* THSensorSupport.swift */,
+			);
+			path = THSensor;
+			sourceTree = "<group>";
+		};
 		AA5BA7BD29058A6000C266AE = {
 			isa = PBXGroup;
 			children = (
@@ -79,16 +108,11 @@
 			children = (
 				AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */,
 				AA5BA7CB29058A6000C266AE /* ContentView.swift */,
-				AA0B31D729064EA60098BB49 /* SidebarNavigationList.swift */,
-				AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */,
-				AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */,
-				AA0B31D92906B5D70098BB49 /* NavigationDetailView.swift */,
 				AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */,
-				AA0B31D529064E790098BB49 /* THSensorView.swift */,
-				AA5BA7D829058A8A00C266AE /* THSensorMonitor.swift */,
-				AA5BA7DA29058A9500C266AE /* THSensorRecords.swift */,
-				AA5BA7DC29058AA000C266AE /* THSensorSupport.swift */,
 				AA5BA7DE29058AAA00C266AE /* Persistence.swift */,
+				AA5A8722290AD149002B5F63 /* Navigation */,
+				AA5A8721290AD134002B5F63 /* IlluminanceSensor */,
+				AA5A8723290AD165002B5F63 /* THSensor */,
 				AA5BA7E029058ABD00C266AE /* QuickSensor.xcdatamodeld */,
 				AA5BA7E729058B4B00C266AE /* Localizable.strings */,
 				AA5BA7CD29058A6100C266AE /* Assets.xcassets */,
