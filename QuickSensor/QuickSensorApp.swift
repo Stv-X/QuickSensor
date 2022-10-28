@@ -19,5 +19,12 @@ struct QuickSensorApp: App {
                 .frame(minWidth: 680)
 #endif
         }
+        
+#if os(macOS)
+        Settings {
+            SettingsView()
+        }
+#endif
+        
     }
 }

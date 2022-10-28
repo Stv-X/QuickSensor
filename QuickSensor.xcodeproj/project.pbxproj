@@ -23,6 +23,7 @@
 		AA5BA7E529058B4B00C266AE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA5BA7E729058B4B00C266AE /* Localizable.strings */; };
 		AAABBAAF290A366800775A0F /* IlluminanceSensorMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */; };
 		AAABBAB1290A379500775A0F /* IlluminanceSensorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */; };
+		AAAE3EED290B743200F8E7F2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,7 @@
 		AA5BA7E829058B5000C266AE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorMonitor.swift; sourceTree = "<group>"; };
 		AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorSupport.swift; sourceTree = "<group>"; };
+		AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 				AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */,
 				AA5BA7DE29058AAA00C266AE /* Persistence.swift */,
 				AA5A8722290AD149002B5F63 /* Navigation */,
+				AAAE3EEE290B748300F8E7F2 /* Settings */,
 				AA5A8721290AD134002B5F63 /* IlluminanceSensor */,
 				AA5A8723290AD165002B5F63 /* THSensor */,
 				AA5BA7E029058ABD00C266AE /* QuickSensor.xcdatamodeld */,
@@ -128,6 +131,14 @@
 				AA5BA7D129058A6100C266AE /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		AAAE3EEE290B748300F8E7F2 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +220,7 @@
 				AA5BA7E229058ABD00C266AE /* QuickSensor.xcdatamodeld in Sources */,
 				AA5BA7DD29058AA000C266AE /* THSensorSupport.swift in Sources */,
 				AA0B31D829064EA60098BB49 /* SidebarNavigationList.swift in Sources */,
+				AAAE3EED290B743200F8E7F2 /* SettingsView.swift in Sources */,
 				AAABBAB1290A379500775A0F /* IlluminanceSensorSupport.swift in Sources */,
 				AA5BA7DF29058AAA00C266AE /* Persistence.swift in Sources */,
 				AA5BA7CA29058A6000C266AE /* QuickSensorApp.swift in Sources */,

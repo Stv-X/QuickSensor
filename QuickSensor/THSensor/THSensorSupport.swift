@@ -10,7 +10,6 @@ import UniformTypeIdentifiers
 import Charts
 
 //温度等级，用于绘制监视器视图中的动态温度计符号
-
 enum TemperatureLevel: String, CaseIterable, Identifiable {
     case low
     case medium
@@ -20,7 +19,6 @@ enum TemperatureLevel: String, CaseIterable, Identifiable {
 }
 
 //温度记录，为温度柱状图表提供数据
-
 struct TemperatureRecord: Identifiable {
     var value: Double
     var timestamp: Date
@@ -28,30 +26,30 @@ struct TemperatureRecord: Identifiable {
 }
 
 //湿度记录，为湿度柱状图表提供数据
-
 struct HumidityRecord: Identifiable {
     var value: Double
     var timestamp: Date
     var id = UUID()
 }
 
-
+//温度状态，包含一个以标准单位真实值表示温度数值的 value 属性
 struct TemperatureState: Equatable {
     var value: Double
 }
 
+//湿度状态，包含一个以标准单位真实值表示湿度数值的 value 属性
 struct HumidityState: Equatable {
     var value: Double
 }
 
-
-
+//整理好的数据，包含温度状态、湿度状态、校验结果
 struct OrganizedData {
     var temperature: TemperatureState
     var humidity: HumidityState
     var isVerified: Bool
 }
 
+//经过 DHT22 协议规定分类好的二进制原始数据，包括湿度高8位、湿度低8位、温度高8位、温度低8位、校验位
 struct THRawData {
     var humidityHigh: String
     var humidityLow: String
@@ -60,8 +58,10 @@ struct THRawData {
     var verifyBit: String
 }
 
-var availableBaudRates: [Int] = [115200, 57600, 38400, 19200, 14400, 9600]
+//可选的波特率
+let availableBaudRates: [Int] = [460800, 345600, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300]
 
+//温湿度传感器监视器视图中的高级选项
 struct THSensorMonitorOptions {
     var serialPort: Int = 0
     var baudRate: Int = availableBaudRates.last!
