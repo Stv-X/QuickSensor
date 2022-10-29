@@ -40,7 +40,7 @@ struct THSensorMonitor: View {
     
     var body: some View {
         VStack {
-            Grid(horizontalSpacing: 20, verticalSpacing: 16) {
+            Grid(horizontalSpacing: 20, verticalSpacing: verticalSpacingForHorizontalSizeClass()) {
                 GridRow {
                     ThermometerSymbol(level: $temperatureLevel)
                         .onChange(of: temperatureState) { _ in
@@ -149,6 +149,22 @@ struct THSensorMonitor: View {
         .toolbarRole(.browser)
         #endif
         
+#if os(macOS)
+        .popover(isPresented: $isOptionsPopoverPresented) {
+                THSensorMonitorOptionsPopover(isPresented: $isOptionsPopoverPresented,
+                                              options: $options)
+        }
+#else
+        .sheet(isPresented: $isOptionsPopoverPresented) {
+            NavigationStack {
+                THSensorMonitorOptionsPopover(isPresented: $isOptionsPopoverPresented,
+                                              options: $options)
+                .navigationTitle("Options")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+#endif
+        
         .onAppear {
             onAppearAction()
         }
@@ -193,19 +209,6 @@ struct THSensorMonitor: View {
         } label: {
             Label("Options", systemImage: "slider.horizontal.3")
         }
-        #if os(macOS)
-        .popover(isPresented: $isOptionsPopoverPresented) {
-            THSensorMonitorOptionsPopover(isPresented: $isOptionsPopoverPresented,
-                                        options: $options)
-        }
-        #else
-        .sheet(isPresented: $isOptionsPopoverPresented) {
-            NavigationStack {
-                THSensorMonitorOptionsPopover(isPresented: $isOptionsPopoverPresented,
-                                              options: $options)
-            }
-        }
-        #endif
         .disabled(isAutoRefreshEnabled)
     }
     
@@ -313,7 +316,6 @@ struct THSensorMonitor: View {
 //            addItem()
         }
         
-        
     }
     
     private func addItem() {
@@ -330,6 +332,19 @@ struct THSensorMonitor: View {
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
+    }
+    
+
+    private func verticalSpacingForHorizontalSizeClass() -> CGFloat {
+#if os(iOS)
+        if horizontalSizeClass == .compact {
+            return 8
+        } else {
+            return 16
+        }
+#else
+        return 16
+#endif
     }
     
     private func sensorRefreshAction() {
@@ -509,7 +524,7 @@ struct THSensorMonitorOptionsPopover: View {
                     HStack {
                         Text("Baud Rate")
                         Spacer()
-                        Text("\(onEditingOptions.baudRate)")
+                        Text("\(availableBaudRates[onEditingOptions.baudRateIndex])")
                     }
                 } onIncrement: {
                     baudRateIncrementStep()
@@ -545,7 +560,9 @@ struct THSensorMonitorOptionsPopover: View {
             .padding()
 #endif
         }
-        
+        .onAppear {
+            onEditingOptions = options
+        }
 #if os(iOS)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -563,22 +580,22 @@ struct THSensorMonitorOptionsPopover: View {
             }
         }
 #endif
-        
-        .onAppear {
-            onEditingOptions = options
-        }
     }
     
     private func baudRateIncrementStep() {
-        if onEditingOptions.baudRate == availableBaudRates.first! {} else {
-            onEditingOptions.baudRate = availableBaudRates[availableBaudRates.firstIndex(of: onEditingOptions.baudRate)! - 1]
-        }
+        onEditingOptions.baudRateIndex -= 1
+                
+                if onEditingOptions.baudRateIndex <= 0 {
+                    onEditingOptions.baudRateIndex = availableBaudRates.count - 1
+                }
     }
     
     private func baudRateDecrementStep() {
-        if onEditingOptions.baudRate == availableBaudRates.last! {} else {
-            onEditingOptions.baudRate = availableBaudRates[availableBaudRates.firstIndex(of: onEditingOptions.baudRate)! + 1]
-        }
+        onEditingOptions.baudRateIndex += 1
+                
+                if onEditingOptions.baudRateIndex > availableBaudRates.count - 1 {
+                    onEditingOptions.baudRateIndex = 0
+                }
     }
 }
 

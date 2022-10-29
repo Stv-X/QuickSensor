@@ -61,10 +61,10 @@ struct THRawData {
 //可选的波特率
 let availableBaudRates: [Int] = [460800, 345600, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300]
 
-//温湿度传感器监视器视图中的高级选项
+//温湿度传感器监视器视图中可调节的选项
 struct THSensorMonitorOptions {
     var serialPort: Int = 0
-    var baudRate: Int = availableBaudRates.last!
+    var baudRateIndex: Int = availableBaudRates.count - 1
 }
 
 
@@ -111,7 +111,6 @@ func randomTHSensorRawData() -> String {
 //将十进制温湿度转换为满足 DHT22 协议的 16 位二进制原始数据字符串
 //输入: 温湿度的十进制原始数据（比标准单位数据大 10 倍）
 //例：rawData(of: 386) -> "0000000100001101"
-
 func rawData(of data: Int) -> String {
     var rawData = ""
     if data < 0 {
@@ -138,7 +137,6 @@ func rawData(of data: Int) -> String {
 
 //从 16 位二进制原始数据字符串中获取高 8 位
 //例: highBit(of: "0000000100001101") -> "00000001"
-
 func highBit(of rawData: String) -> String {
     var highBit = ""
     
@@ -151,7 +149,6 @@ func highBit(of rawData: String) -> String {
 
 //从 16 位二进制原始数据字符串中获取低 8 位
 //例: highBit(of: "0000000100001101") -> "00001101"
-
 func lowBit(of rawData: String) -> String {
     var lowBit = ""
     
@@ -163,7 +160,6 @@ func lowBit(of rawData: String) -> String {
 }
 
 //将字符串拷贝到系统剪贴板
-
 func copyToClipBoard(textToCopy: String) {
 #if os(macOS)
     let pasteBoard = NSPasteboard.general
@@ -187,7 +183,6 @@ extension THRawData {
     //例：
     // let formattedRaw = [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0]
     // rawData.map(from: formattedRaw) -> THRawData(humidityHigh: "00000010", humidityLow: "10010010", temperatureHigh: "00000001", temperatureLow: "00001101", verifyBit: "10100010")
-    
     mutating func map(from formattedRawData: [Int]) {
         for i in 0..<8 {
             self.humidityHigh += "\(formattedRawData[i])"
@@ -204,7 +199,6 @@ extension String {
     
     //判断字符串是否为二进制数字
     //例: "01011001".isBinary() -> true
-    
     func isBinary() -> Bool {
         var isBinary = true
         
@@ -217,7 +211,6 @@ extension String {
     
     //将二进制字符串转换为每 4 位空一格的易读形式
     //例: "01011001".readableBinary() -> "0101 1001"
-    
     func readableBinary() -> String {
         if self.isBinary() {
             let splitedBin = self.split(separator: "")
@@ -237,7 +230,6 @@ extension String {
     
     //将二进制字符串转换为十进制数字
     //例: "01011001".toDec() -> 89
-    
     mutating func toDec() -> Int {
         if self.isBinary() {
             var sum = 0
@@ -255,7 +247,6 @@ extension String {
     //                    [当温度低于 0 °C 时温度数据的最高位置 1]
     //例: "01011001".toTDec() -> 89
     //    "11011001".toTDec() -> -89
-    
     mutating func toDHT22Dec() -> Int {
         if self.isBinary() {
             var sum = 0
