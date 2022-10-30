@@ -159,7 +159,7 @@ struct IlluminanceSensorMonitor: View {
     private func sensorRefreshAction() {
         illuminanceSensorState.isIlluminated = randomIlluminance()
         
-        var lastIlluminationRecord = illuminationRecords.last!
+        let lastIlluminationRecord = illuminationRecords.last!
         
         illuminationRecords.append(IlluminationRecord(isIlluminated: illuminanceSensorState.isIlluminated, timestamp: Date()))
         
@@ -198,7 +198,7 @@ struct IlluminanceSensorMonitor: View {
     }
     
     private func randomIlluminance() -> Bool {
-        var seed = Int.random(in: 0...1)
+        let seed = Int.random(in: 0...1)
         
         if seed == 0 {
             return false
