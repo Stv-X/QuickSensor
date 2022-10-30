@@ -26,25 +26,34 @@ struct IlluminanceSensorMonitor: View {
                     VStack {
                         lightbulbSymbol
                         Text(illuminanceSensorState.isIlluminated ? "Illuminated" : "Not Illuminated")
-                            .font(.system(.largeTitle, design: .rounded))
+                            .font(.system(.title, design: .rounded))
+                            .lineLimit(1)
 #if os(iOS)
                             .bold()
                             .frame(width: 140)
 #endif
                     }
+                    .padding(.horizontal)
+                    
+                    Spacer()
+                    
                     Chart(illuminationIntervalRecords) { record in
-                                    BarMark(
-                                        xStart: record.start.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
-                                        xEnd: record.end.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
-                                        y: .value("State", record.state.rawValue.capitalized)
-                                    )
-                                    .foregroundStyle(barMarkColor(record: record))
-                                }
-                    //            .chartYScale(type: .category)
-                                .chartXScale(domain: timestampOfChartBeganPlotting.timeIntervalSince(timestampOfChartBeganPlotting)...timestampOfChartBeganPlotting.addingTimeInterval(20).timeIntervalSince(timestampOfChartBeganPlotting))
-                                .frame(width: 500, height: 100)
-                                .padding()
+                        
+                        BarMark(
+                            xStart: record.start.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
+                            xEnd: record.end.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
+                            y: .value("State", record.state.rawValue.capitalized)
+                        )
+                        .foregroundStyle(barMarkColor(record: record))
+                        
+                    }
+                    
+                    .chartXScale(domain: timestampOfChartBeganPlotting.timeIntervalSince(timestampOfChartBeganPlotting)...timestampOfChartBeganPlotting.addingTimeInterval(20).timeIntervalSince(timestampOfChartBeganPlotting))
+                    
+                    .frame(width: 500, height: 100)
+                    .padding()
                 }
+                
                 Divider()
                 
                 DisclosureGroup("Details") {
@@ -55,8 +64,8 @@ struct IlluminanceSensorMonitor: View {
                 Spacer()
                 
             }
-            
-//        .frame(minWidth: 390, minHeight: 300)
+        
+            .frame(minWidth: 640, minHeight: 300)
         
         .toolbar {
             ToolbarItem(placement: .navigation) {
@@ -150,9 +159,13 @@ struct IlluminanceSensorMonitor: View {
     private func onAppearAction() {
         illuminanceSensorState.isIlluminated = randomIlluminance()
         if illuminationRecords.isEmpty {
-            illuminationRecords.append(IlluminationRecord(isIlluminated: illuminanceSensorState.isIlluminated, timestamp: Date()))
+            illuminationRecords.append(IlluminationRecord(isIlluminated: illuminanceSensorState.isIlluminated,
+                                                          timestamp: Date()))
             
-            illuminationIntervalRecords.append(IlluminationIntervalRecord(state: illuminanceSensorState.isIlluminated ? .isIlluminated : .isNotIlluminated, start: illuminationRecords.first!.timestamp, end: illuminationIntervalRecords.isEmpty ? illuminationRecords.last!.timestamp : illuminationRecords.last!.timestamp))
+            illuminationIntervalRecords.append(IlluminationIntervalRecord(state:
+                                                                            illuminanceSensorState.isIlluminated ? .isIlluminated : .isNotIlluminated,
+                                                                          start: illuminationRecords.first!.timestamp,
+                                                                          end: illuminationIntervalRecords.isEmpty ? illuminationRecords.last!.timestamp : illuminationRecords.last!.timestamp))
         }
     }
     
