@@ -168,6 +168,7 @@ struct THSensorMonitor: View {
         .onAppear {
             onAppearAction()
         }
+        
         .onReceive(autoRefreshTimer) { _ in
             if isAutoRefreshEnabled {
                 withAnimation {

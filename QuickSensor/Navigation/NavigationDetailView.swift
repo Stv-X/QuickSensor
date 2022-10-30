@@ -15,6 +15,8 @@ struct NavigationDetailView: View {
             switch selection {
             case 0:
                 THSensorView()
+            case 1:
+                IlluminanceSensorView()
             default:
                 LaunchScreen()
             }
