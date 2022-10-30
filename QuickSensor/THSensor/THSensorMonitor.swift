@@ -409,8 +409,8 @@ struct THSensorMonitor: View {
         return rawData
     }
     
-    private func organizedData(from rawData: String) -> OrganizedData {
-        var organizedData = OrganizedData(temperature: TemperatureState(value: 30.0),
+    private func organizedData(from rawData: String) -> OrganizedTHData {
+        var organizedData = OrganizedTHData(temperature: TemperatureState(value: 30.0),
                                           humidity: HumidityState(value: 23.0),
                                           isVerified: false)
         

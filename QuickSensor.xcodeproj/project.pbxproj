@@ -24,6 +24,7 @@
 		AAABBAAF290A366800775A0F /* IlluminanceSensorMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */; };
 		AAABBAB1290A379500775A0F /* IlluminanceSensorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */; };
 		AAAE3EED290B743200F8E7F2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */; };
+		AAE72DBA290E1E330036688A /* UniversalSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE72DB9290E1E330036688A /* UniversalSupport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorMonitor.swift; sourceTree = "<group>"; };
 		AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorSupport.swift; sourceTree = "<group>"; };
 		AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AAE72DB9290E1E330036688A /* UniversalSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalSupport.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				AA5BA7CB29058A6000C266AE /* ContentView.swift */,
 				AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */,
 				AA5BA7DE29058AAA00C266AE /* Persistence.swift */,
+				AAE72DB9290E1E330036688A /* UniversalSupport.swift */,
 				AA5A8722290AD149002B5F63 /* Navigation */,
 				AAAE3EEE290B748300F8E7F2 /* Settings */,
 				AA5A8721290AD134002B5F63 /* IlluminanceSensor */,
@@ -214,6 +217,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AAABBAAF290A366800775A0F /* IlluminanceSensorMonitor.swift in Sources */,
+				AAE72DBA290E1E330036688A /* UniversalSupport.swift in Sources */,
 				AA5BA7CC29058A6000C266AE /* ContentView.swift in Sources */,
 				AA5BA7D929058A8A00C266AE /* THSensorMonitor.swift in Sources */,
 				AA0B31DC2906B7720098BB49 /* LaunchScreen.swift in Sources */,
