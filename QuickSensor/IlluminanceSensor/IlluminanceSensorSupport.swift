@@ -28,3 +28,14 @@ struct IlluminationIntervalRecord: Identifiable {
     var end: Date
     var id = UUID()
 }
+
+func randomIlluminance() -> Bool {
+    let seed = Int.random(in: 0...1)
+    
+    if seed == 0 {
+        return false
+    } else {
+        return true
+    }
+    
+}

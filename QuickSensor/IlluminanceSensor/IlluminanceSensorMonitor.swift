@@ -106,6 +106,9 @@ struct IlluminanceSensorMonitor: View {
     // 􀊃 Auto Refresh
     var SensorDataAutoRefreshButton: some View {
         Button {
+            if !isAutoRefreshEnabled {
+                
+            }
             isAutoRefreshEnabled.toggle()
         } label: {
             Label(isAutoRefreshEnabled ? "Stop" : "Auto",
@@ -208,17 +211,6 @@ struct IlluminanceSensorMonitor: View {
         } else {
             return .indigo
         }
-    }
-    
-    private func randomIlluminance() -> Bool {
-        let seed = Int.random(in: 0...1)
-        
-        if seed == 0 {
-            return false
-        } else {
-            return true
-        }
-        
     }
     
 }
