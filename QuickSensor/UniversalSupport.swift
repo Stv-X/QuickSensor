@@ -40,9 +40,12 @@ extension String {
     //例: "01011001".isBinary() -> true
     func isBinary() -> Bool {
         var isBinary = true
-        
-        if !self.contains("1") && !self.contains("0") {
-            isBinary = false
+        var splitedString = self.split(separator: "")
+        for character in splitedString {
+            if character != "0" && character != "1" {
+                isBinary = false
+                break
+            }
         }
         
         return isBinary
