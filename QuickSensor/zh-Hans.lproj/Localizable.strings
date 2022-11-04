@@ -17,6 +17,7 @@
 "Baud Rate" = "波特率";
 "Confirm" = "确认";
 "Cancel" = "取消";
+"OK" = "好";
 "Raw Data" = "原始数据";
 "Humidity Raw Data" = "湿度原始数据";
 "Temperature Raw Data" = "温度原始数据";
@@ -34,5 +35,7 @@
 
 "General" = "通用";
 "Appearance" = "外观";
-"Connect to address:" = "连接到地址：";
-"Port:" = "端口：";
+"Connect to address" = "连接到地址";
+"Port" = "端口";
+"Invalid Port" = "非法的端口号";
+"Please check your port." = "请检查你的端口号格式";

@@ -108,7 +108,7 @@ func sendMessage(_ content: String) {
         if let sendError = sendError {
             print(sendError)
         } else {
-            print("Sent: \(content)\n")
+//            print("Sent: \(content)\n")
         }
     }))
 }

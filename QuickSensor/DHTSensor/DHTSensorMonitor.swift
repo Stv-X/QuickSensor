@@ -148,13 +148,24 @@ struct DHTSensorMonitor: View {
             }
             
         }
-        #if os(iOS)
-        .toolbarRole(.browser)
-        #endif
         
         .onAppear {
             onAppearAction()
         }
+        
+        #if os(iOS)
+        .toolbarRole(.browser)
+
+        .sheet(isPresented: $isOptionsModalPresented) {
+            NavigationStack {
+                DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
+                                             options: $options,
+                                             isNetworkEndPointPortNumberInvalid: $isNetworkEndPointPortNumberInvalid)
+                .navigationTitle("Options")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+        #endif
         
 //        .onReceive(autoRefreshTimer) { _ in
 //            if isdataListeningEnabled {
@@ -209,15 +220,6 @@ struct DHTSensorMonitor: View {
             DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
                                               options: $options,
                                               isNetworkEndPointPortNumberInvalid: $isNetworkEndPointPortNumberInvalid)
-        }
-#else
-        .sheet(isPresented: $isOptionsModalPresented) {
-            NavigationStack {
-                DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                              options: $options)
-                .navigationTitle("Options")
-                .navigationBarTitleDisplayMode(.inline)
-            }
         }
 #endif
     }
@@ -368,7 +370,7 @@ struct DHTSensorMonitor: View {
           switch newState {
           case .ready:
               print("state ready")
-              print("Succeeded to connect to " + host + ": " + port)
+              print("Succeeded to connect to " + host + ":" + port)
               
               self.isdataListeningEnabled = true
               receiveRawDataFromServer()
@@ -470,13 +472,12 @@ struct DHTSensorMonitor: View {
                 
             } else {
                 let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
-                print(data!)
+//                print(data!)
 //                receivedRawData = data!
                 
-                if data!.isBinary() {
+                if data!.isBinary() && !firstElementIsDirty {
                     withAnimation {
                         receivedRawData = data!
-                        //                    print("receivedRawData appended \(data!)")
                         
                         temperatureState.value = organizedData(from: receivedRawData).temperature.value
                         humidityState.value = organizedData(from: receivedRawData).humidity.value
@@ -501,7 +502,9 @@ struct DHTSensorMonitor: View {
                         }
                         
                         addItem()
+                        
                     }
+                    firstElementIsDirty = false
                 }
             }
             
@@ -550,8 +553,6 @@ struct DHTSensorMonitor: View {
                                           isVerified: false)
         
         let formattedRawData = formattedRawData(from: rawData)
-        
-//        print(formattedRawData)
         
         var humidityRaw = ""
         var temperatureRaw = ""

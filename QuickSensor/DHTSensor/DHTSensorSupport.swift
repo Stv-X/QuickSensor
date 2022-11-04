@@ -9,6 +9,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 import Charts
 
+var firstElementIsDirty = false
+
 //温度等级，用于绘制监视器视图中的动态温度计符号
 enum TemperatureLevel: String, CaseIterable, Identifiable {
     case low
@@ -165,7 +167,6 @@ extension DHTRawData {
     // let formattedRaw = [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0]
     // rawDHTData.map(from: formattedRaw) -> DHTRawData(humidityHigh: "00000010", humidityLow: "10010010", temperatureHigh: "00000001", temperatureLow: "00001101", verifyBit: "10100010")
     mutating func map(from formattedRawData: [Int]) {
-//        print(formattedRawData)
         for i in 0..<8 {
             self.humidityHigh += "\(formattedRawData[i])"
             self.humidityLow += "\(formattedRawData[i + 8])"
@@ -227,7 +228,9 @@ func rawDataFromServer() -> String {
     receiveMessage()
     
     if receivedRawData.last == nil {
+        firstElementIsDirty = true
         return "0000000110010001000000100101101111101111"
+        
     } else {
         return data
     }

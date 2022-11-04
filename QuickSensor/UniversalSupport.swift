@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 import Network
 
 //将字符串拷贝到系统剪贴板
@@ -15,7 +16,8 @@ func copyToClipBoard(textToCopy: String) {
     pasteBoard.clearContents()
     pasteBoard.setString(textToCopy, forType: .string)
 #else
-    UIPasteboard.general.setValue(textToCopy, forPasteboardType: UTType.plainText.identifier)
+    UIPasteboard.general.setValue(textToCopy,
+                                  forPasteboardType: UTType.plainText.identifier)
 #endif
 }
 

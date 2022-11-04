@@ -20,24 +20,22 @@ struct DHTSensorMonitorOptionsModal: View {
             Form {
                 
                 // Hostname Field
-                HStack(alignment: .center) {
-                    Text("Connect to address:")
+                HStack {
+                    Text("Connect to address")
                     Spacer()
                     TextField("", text: $onEditingOptions.hostname)
                         .textFieldStyle(.roundedBorder)
-                        .frame(width: 74)
-                        .padding(.bottom)
+                        .frame(width: 100)
                 }
                 .frame(maxHeight: 20)
                 
                 // Port Field
-                HStack(alignment: .center) {
-                    Text("Port:")
+                HStack {
+                    Text("Port")
                     Spacer()
                     TextField("", text: $onEditingOptions.port)
                         .textFieldStyle(.roundedBorder)
-                        .frame(width: 74)
-                        .padding(.bottom)
+                        .frame(width: 100)
                 }
                 .frame(maxHeight: 20)
                 
@@ -88,9 +86,9 @@ struct DHTSensorMonitorOptionsModal: View {
                     }
                 }
                 .alert(isPresented: $isNetworkEndPointPortNumberInvalid) {
-                            Alert(title: Text("Invalid Prot"),
+                            Alert(title: Text("Invalid Port"),
                                   message: Text("Please check your port."),
-                                  dismissButton: .default(Text("Cancel")))
+                                  dismissButton: .default(Text("OK")))
                         }
                 
                 .keyboardShortcut(.defaultAction)
@@ -110,9 +108,21 @@ struct DHTSensorMonitorOptionsModal: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Confirm") {
-                    options = onEditingOptions
-                    isPresented.toggle()
+                    if onEditingOptions.port.isNWPort() {
+                        options = onEditingOptions
+                        connection = NWConnection(host: NWEndpoint.Host(options.hostname),
+                                                  port: NWEndpoint.Port(options.port)!,
+                                                  using: .tcp)
+                        isPresented.toggle()
+                    } else {
+                        isNetworkEndPointPortNumberInvalid = true
+                    }
                 }
+                .alert(isPresented: $isNetworkEndPointPortNumberInvalid) {
+                            Alert(title: Text("Invalid Port"),
+                                  message: Text("Please check your port."),
+                                  dismissButton: .default(Text("OK")))
+                        }
                 .keyboardShortcut(.defaultAction)
             }
             ToolbarItem(placement: .cancellationAction) {
