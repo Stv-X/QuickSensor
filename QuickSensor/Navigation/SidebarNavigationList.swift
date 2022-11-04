@@ -19,16 +19,16 @@ struct SidebarNavigationList: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \THData.timestamp, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \DHTData.timestamp, ascending: true)],
         animation: .default)
     
-    private var items: FetchedResults<THData>
+    private var items: FetchedResults<DHTData>
     
     
     var body: some View {
         List(selection: $store.selection) {
             NavigationLink(value: 0) {
-                THSensor
+                DHTSensor
             }
             
             NavigationLink(value: 1) {
@@ -39,7 +39,7 @@ struct SidebarNavigationList: View {
         .listStyle(.sidebar)
     }
     
-    var THSensor: some View {
+    var DHTSensor: some View {
         VStack(alignment: .leading, spacing: 1) {
             Text("T&H Sensor")
             HStack {

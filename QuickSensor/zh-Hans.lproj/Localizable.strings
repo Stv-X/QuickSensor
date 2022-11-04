@@ -34,3 +34,5 @@
 
 "General" = "通用";
 "Appearance" = "外观";
+"Connect to address:" = "连接到地址：";
+"Port:" = "端口：";

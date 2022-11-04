@@ -16,7 +16,7 @@ var connection = NWConnection(host: "10.10.100.100",
 
 var receivedRawData: [String] = []
 
-func connectToServer() {
+func connectToServer(host: String, port: String) {
     //设置连接参数
     var params: NWParameters!
     
@@ -27,9 +27,9 @@ func connectToServer() {
     //禁止代理
     params.preferNoProxies = true
     
-//    connection = NWConnection(host: NWEndpoint.Host(hostname),
-//                              port: NWEndpoint.Port(port)!,
-//                              using: params)
+    connection = NWConnection(host: NWEndpoint.Host(host),
+                              port: NWEndpoint.Port(port)!,
+                              using: params)
     
     //开始连接
     connection.start(queue: socketQueue)
@@ -96,11 +96,12 @@ func receiveMessage() {
 func disconnectToServer() {
     connection.cancel()
 //    receivedMessage += "Disconnected to " + hostname + ": " + port + "\n"
+    
     print(receivedRawData)
+    receivedRawData.removeAll()
 }
 
-func sendMessage() {
-    let content = "CC EE 02 NO 01 00 00 FF"
+func sendMessage(_ content: String) {
     
     connection.send(content: content.data(using: .utf8),
                     completion: .contentProcessed({ (sendError) in

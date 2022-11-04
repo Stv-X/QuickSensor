@@ -1,5 +1,5 @@
 //
-//  THSensorSupport.swift
+//  DHTSensorSupport.swift
 //  QuickSensor
 //
 //  Created by 徐嗣苗 on 2022/10/22.
@@ -43,14 +43,14 @@ struct HumidityState: Equatable {
 }
 
 //整理好的数据，包含温度状态、湿度状态、校验结果
-struct OrganizedTHData {
+struct OrganizedDHTData {
     var temperature: TemperatureState
     var humidity: HumidityState
     var isVerified: Bool
 }
 
 //经过 DHT22 协议规定分类好的二进制原始数据，包括湿度高8位、湿度低8位、温度高8位、温度低8位、校验位
-struct THRawData {
+struct DHTRawData {
     var humidityHigh: String
     var humidityLow: String
     var temperatureHigh: String
@@ -59,14 +59,16 @@ struct THRawData {
 }
 
 //温湿度传感器监视器视图中可调节的选项
-struct THSensorMonitorOptions {
+struct DHTSensorMonitorOptions {
     var serialPort: Int = 0
     var baudRateIndex: Int = availableBaudRates.count - 1
+    var hostname: String = "127.0.0.1"
+    var port: String = "8080"
 }
 
 
 //随机生成满足校验要求的温湿度二进制数据字符串
-func randomTHSensorRawData() -> String {
+func randomDHTSensorRawData() -> String {
     var data = ""
     var temperature: Int
     var humidity: Int
@@ -83,8 +85,8 @@ func randomTHSensorRawData() -> String {
     humidity = Int.random(in: 0...1000)
     temperature = Int.random(in: -200...800)
     
-    humidityRawData = rawTHData(of: humidity)
-    temperatureRawData = rawTHData(of: temperature)
+    humidityRawData = rawDHTData(of: humidity)
+    temperatureRawData = rawDHTData(of: temperature)
     
     humidityRawHigh = highBit(of: humidityRawData)
     humidityRawLow = lowBit(of: humidityRawData)
@@ -107,8 +109,8 @@ func randomTHSensorRawData() -> String {
 
 //将十进制温湿度转换为满足 DHT22 协议的 16 位二进制原始数据字符串
 //输入: 温湿度的十进制原始数据（比标准单位数据大 10 倍）
-//例：rawTHData(of: 386) -> "0000000100001101"
-func rawTHData(of data: Int) -> String {
+//例：rawDHTData(of: 386) -> "0000000100001101"
+func rawDHTData(of data: Int) -> String {
     var rawData = ""
     if data < 0 {
         rawData = (-data).binary
@@ -134,11 +136,11 @@ func rawTHData(of data: Int) -> String {
 
 //从 16 位二进制原始数据字符串中获取高 8 位
 //例: highBit(of: "0000000100001101") -> "00000001"
-func highBit(of rawTHData: String) -> String {
+func highBit(of rawDHTData: String) -> String {
     var highBit = ""
     
     for i in 0..<8 {
-        highBit += rawTHData.split(separator: "")[i]
+        highBit += rawDHTData.split(separator: "")[i]
     }
     
     return highBit
@@ -146,23 +148,24 @@ func highBit(of rawTHData: String) -> String {
 
 //从 16 位二进制原始数据字符串中获取低 8 位
 //例: highBit(of: "0000000100001101") -> "00001101"
-func lowBit(of rawTHData: String) -> String {
+func lowBit(of rawDHTData: String) -> String {
     var lowBit = ""
     
     for i in 8..<16 {
-        lowBit += rawTHData.split(separator: "")[i]
+        lowBit += rawDHTData.split(separator: "")[i]
     }
     
     return lowBit
 }
 
-extension THRawData {
+extension DHTRawData {
     
-    //将格式化后的原始数据对应地记录到 THRawData 的各项属性（湿度高8位、湿度低8位、温度高8位、温度低8位、校验位）中
+    //将格式化后的原始数据对应地记录到 DHTRawData 的各项属性（湿度高8位、湿度低8位、温度高8位、温度低8位、校验位）中
     //例：
     // let formattedRaw = [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0]
-    // rawTHData.map(from: formattedRaw) -> THRawData(humidityHigh: "00000010", humidityLow: "10010010", temperatureHigh: "00000001", temperatureLow: "00001101", verifyBit: "10100010")
+    // rawDHTData.map(from: formattedRaw) -> DHTRawData(humidityHigh: "00000010", humidityLow: "10010010", temperatureHigh: "00000001", temperatureLow: "00001101", verifyBit: "10100010")
     mutating func map(from formattedRawData: [Int]) {
+//        print(formattedRawData)
         for i in 0..<8 {
             self.humidityHigh += "\(formattedRawData[i])"
             self.humidityLow += "\(formattedRawData[i + 8])"
@@ -218,3 +221,15 @@ extension String {
 }
 
 
+func rawDataFromServer() -> String {
+    let data = ""
+    sendMessage("DHT")
+    receiveMessage()
+    
+    if receivedRawData.last == nil {
+        return "0000000110010001000000100101101111101111"
+    } else {
+        return data
+    }
+    
+}

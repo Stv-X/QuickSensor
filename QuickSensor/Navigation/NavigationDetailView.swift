@@ -14,7 +14,12 @@ struct NavigationDetailView: View {
         if let selection = store.selection {
             switch selection {
             case 0:
-                THSensorView()
+                DHTSensorView()
+                    .onDisappear {
+                        if connection.state != .cancelled {
+                            disconnectToServer()
+                        }
+                    }
             case 1:
                 IlluminanceSensorView()
             default:

@@ -1,5 +1,5 @@
 //
-//  THSensorMonitor.swift
+//  DHTSensorMonitor.swift
 //  QuickSensor
 //
 //  Created by 徐嗣苗 on 2022/10/21.
@@ -7,8 +7,9 @@
 
 import SwiftUI
 import Charts
+import Network
 
-struct THSensorMonitor: View {
+struct DHTSensorMonitor: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     #if os(iOS)
@@ -16,10 +17,10 @@ struct THSensorMonitor: View {
     #endif
     
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \THData.timestamp, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \DHTData.timestamp, ascending: true)],
         animation: .default)
     
-    private var items: FetchedResults<THData>
+    private var items: FetchedResults<DHTData>
     
     @State private var receivedRawData = "0000001010010010000000010000110110100010"
     
@@ -30,10 +31,12 @@ struct THSensorMonitor: View {
     @State private var humidityState = HumidityState(value: 23)
     @State private var humidityRecords: [HumidityRecord] = []
     
-    @State private var isOptionsPopoverPresented = false
-    @State private var options = THSensorMonitorOptions()
+    @State private var isOptionsModalPresented = false
+    @State private var isdataListeningEnabled = false
     
-    @State private var isAutoRefreshEnabled = false
+    @State private var isNetworkEndPointPortNumberInvalid = false
+    
+    @State public var options = DHTSensorMonitorOptions()
     
     private let autoRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -140,7 +143,7 @@ struct THSensorMonitor: View {
             }
             
             ToolbarItemGroup(placement: .primaryAction) {
-                SensorDataRefreshButton
+//                SensorDataRefreshButton
                 OptionsButton
             }
             
@@ -149,45 +152,34 @@ struct THSensorMonitor: View {
         .toolbarRole(.browser)
         #endif
         
-#if os(macOS)
-        .popover(isPresented: $isOptionsPopoverPresented) {
-                THSensorMonitorOptionsPopover(isPresented: $isOptionsPopoverPresented,
-                                              options: $options)
-        }
-#else
-        .sheet(isPresented: $isOptionsPopoverPresented) {
-            NavigationStack {
-                THSensorMonitorOptionsPopover(isPresented: $isOptionsPopoverPresented,
-                                              options: $options)
-                .navigationTitle("Options")
-                .navigationBarTitleDisplayMode(.inline)
-            }
-        }
-#endif
-        
         .onAppear {
             onAppearAction()
         }
         
-        .onReceive(autoRefreshTimer) { _ in
-            if isAutoRefreshEnabled {
-                withAnimation {
-                    sensorRefreshAction()
-                }
-            }
-        }
+//        .onReceive(autoRefreshTimer) { _ in
+//            if isdataListeningEnabled {
+//                withAnimation {
+//                    sensorRefreshAction()
+//                }
+//            }
+//        }
     }
     
     //MARK: Toolbar Buttons
     
-    // 􀊃 Auto Refresh
+    // 􀊃 Data Listening
     private var SensorDataAutoRefreshButton: some View {
         Button {
-            isAutoRefreshEnabled.toggle()
+            if isdataListeningEnabled {
+                disconnectToServer()
+                isdataListeningEnabled.toggle()
+            } else {
+                connectToServerOfDHT(host: options.hostname, port: options.port)
+            }
             
         } label: {
-            Label(isAutoRefreshEnabled ? "Stop" : "Auto",
-                  systemImage: isAutoRefreshEnabled ? "stop.fill" : "play.fill")
+            Label(isdataListeningEnabled ? "Stop" : "Auto",
+                  systemImage: isdataListeningEnabled ? "stop.fill" : "play.fill")
         }
     }
     
@@ -195,22 +187,39 @@ struct THSensorMonitor: View {
     private var SensorDataRefreshButton: some View {
         Button {
             withAnimation {
-                sensorRefreshAction()
+//                sensorRefreshAction()
             }
         } label: {
             Label("Refresh", systemImage: "square.and.arrow.down")
         }
-        .disabled(isAutoRefreshEnabled)
+        .disabled(isdataListeningEnabled)
     }
     
     // 􀌆 Options
     private var OptionsButton: some View {
         Button {
-            isOptionsPopoverPresented.toggle()
+            isOptionsModalPresented.toggle()
         } label: {
             Label("Options", systemImage: "slider.horizontal.3")
         }
-        .disabled(isAutoRefreshEnabled)
+        .disabled(isdataListeningEnabled)
+        
+#if os(macOS)
+        .popover(isPresented: $isOptionsModalPresented) {
+            DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
+                                              options: $options,
+                                              isNetworkEndPointPortNumberInvalid: $isNetworkEndPointPortNumberInvalid)
+        }
+#else
+        .sheet(isPresented: $isOptionsModalPresented) {
+            NavigationStack {
+                DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
+                                              options: $options)
+                .navigationTitle("Options")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+#endif
     }
     
     //MARK: Details Group
@@ -320,7 +329,7 @@ struct THSensorMonitor: View {
     }
     
     private func addItem() {
-        let newItem = THData(context: viewContext)
+        let newItem = DHTData(context: viewContext)
         newItem.timestamp = Date()
         newItem.temperature = Int64(temperatureState.value * 10)
         newItem.humidity = Int64(humidityState.value * 10)
@@ -335,6 +344,59 @@ struct THSensorMonitor: View {
         }
     }
     
+  private func connectToServerOfDHT(host: String, port: String) {
+      //设置连接参数
+      var params: NWParameters!
+      
+      //使用 TCP 协议
+      params = NWParameters.tcp
+      //仅使用 Wi-Fi
+      params.prohibitedInterfaceTypes = [.wifi]
+      //禁止代理
+      params.preferNoProxies = true
+      
+      connection = NWConnection(host: NWEndpoint.Host(host),
+                                port: NWEndpoint.Port(port)!,
+                                using: params)
+      
+      //开始连接
+      connection.start(queue: socketQueue)
+      
+      //监听连接状态
+      connection.stateUpdateHandler = {
+          (newState) in
+          switch newState {
+          case .ready:
+              print("state ready")
+              print("Succeeded to connect to " + host + ": " + port)
+              
+              self.isdataListeningEnabled = true
+              receiveRawDataFromServer()
+              
+          case .cancelled:
+              print("state cancel")
+          case .waiting(let error):
+              print("state waiting \(error)")
+              if error == NWError.posix(.ECONNREFUSED) {
+                  connection.cancel()
+                  self.isdataListeningEnabled = false
+  //                receivedMessage.append("Connection refused.\n")
+              }
+          case .failed(let error):
+              print("state failed \(error)")
+          case .preparing:
+              print("state preparing")
+          case .setup:
+              print("state setup")
+          default:
+              break
+          }
+      }
+  }
+    
+    
+    
+    
 
     private func verticalSpacingForHorizontalSizeClass() -> CGFloat {
 #if os(iOS)
@@ -348,8 +410,46 @@ struct THSensorMonitor: View {
 #endif
     }
     
-    private func sensorRefreshAction() {
-        
+//    private func sensorRefreshAction() {
+//
+//        var maxStorage = 64
+//
+//        #if os(iOS)
+//        if horizontalSizeClass == .compact {
+//            maxStorage = 32
+//        }
+//        #endif
+//
+//        receivedRawData = rawDataFromServer()
+//
+//        temperatureState.value = organizedData(from: receivedRawData).temperature.value
+//        humidityState.value = organizedData(from: receivedRawData).humidity.value
+//
+//        if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
+//            temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
+//        } else {
+//            temperatureRecords.append(TemperatureRecord(value: temperatureState.value, timestamp: Date()))
+//        }
+//
+//        if humidityRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
+//            humidityRecords[humidityRecords.count - 1].value = humidityState.value
+//        } else {
+//            humidityRecords.append(HumidityRecord(value: humidityState.value, timestamp: Date()))
+//        }
+//
+//        if temperatureRecords.count >= maxStorage {
+//            temperatureRecords.remove(at: 0)
+//        }
+//        if humidityRecords.count >= maxStorage {
+//            humidityRecords.remove(at: 0)
+//        }
+//
+//        addItem()
+//
+//    }
+    
+    private func receiveRawDataFromServer() {
+        let maxLengthOfTCPPacket = 65536
         var maxStorage = 64
         
         #if os(iOS)
@@ -358,30 +458,64 @@ struct THSensorMonitor: View {
         }
         #endif
         
-        receivedRawData = randomTHSensorRawData()
-        temperatureState.value = organizedData(from: receivedRawData).temperature.value
-        humidityState.value = organizedData(from: receivedRawData).humidity.value
         
-        if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
-            temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
-        } else {
-            temperatureRecords.append(TemperatureRecord(value: temperatureState.value, timestamp: Date()))
-        }
+        sendMessage("DHT")
         
-        if humidityRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
-            humidityRecords[humidityRecords.count - 1].value = humidityState.value
-        } else {
-            humidityRecords.append(HumidityRecord(value: humidityState.value, timestamp: Date()))
-        }
-        
-        if temperatureRecords.count >= maxStorage {
-            temperatureRecords.remove(at: 0)
-        }
-        if humidityRecords.count >= maxStorage {
-            humidityRecords.remove(at: 0)
-        }
-        
-        addItem()
+        connection.receive(minimumIncompleteLength: 1,
+                           maximumLength: maxLengthOfTCPPacket,
+                           completion: { (content, context, isComplete, receError) in
+            if let receError = receError {
+                print(receError)
+                return
+                
+            } else {
+                let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
+                print(data!)
+//                receivedRawData = data!
+                
+                if data!.isBinary() {
+                    withAnimation {
+                        receivedRawData = data!
+                        //                    print("receivedRawData appended \(data!)")
+                        
+                        temperatureState.value = organizedData(from: receivedRawData).temperature.value
+                        humidityState.value = organizedData(from: receivedRawData).humidity.value
+                        
+                        if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
+                            temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
+                        } else {
+                            temperatureRecords.append(TemperatureRecord(value: temperatureState.value, timestamp: Date()))
+                        }
+                        
+                        if humidityRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
+                            humidityRecords[humidityRecords.count - 1].value = humidityState.value
+                        } else {
+                            humidityRecords.append(HumidityRecord(value: humidityState.value, timestamp: Date()))
+                        }
+                        
+                        if temperatureRecords.count >= maxStorage {
+                            temperatureRecords.remove(at: 0)
+                        }
+                        if humidityRecords.count >= maxStorage {
+                            humidityRecords.remove(at: 0)
+                        }
+                        
+                        addItem()
+                    }
+                }
+            }
+            
+            if isComplete {
+                //关闭资源
+                connection.cancel()
+                return
+                
+            }
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + TimeInterval(1)) {
+                receiveRawDataFromServer()
+            }
+            
+        })
         
     }
     
@@ -398,20 +532,20 @@ struct THSensorMonitor: View {
         }
     }
     
-    private func formattedRawData(from rawData: String) -> THRawData {
+    private func formattedRawData(from rawData: String) -> DHTRawData {
         let splitedRawData = rawData.split(separator: "")
         var formattedRawData: [Int] = []
         for i in splitedRawData {
             formattedRawData.append(Int(i)!)
         }
-        var rawData = THRawData(humidityHigh: "", humidityLow: "", temperatureHigh: "", temperatureLow: "", verifyBit: "")
+        var rawData = DHTRawData(humidityHigh: "", humidityLow: "", temperatureHigh: "", temperatureLow: "", verifyBit: "")
         
         rawData.map(from: formattedRawData)
         return rawData
     }
     
-    private func organizedData(from rawData: String) -> OrganizedTHData {
-        var organizedData = OrganizedTHData(temperature: TemperatureState(value: 30.0),
+    private func organizedData(from rawData: String) -> OrganizedDHTData {
+        var organizedData = OrganizedDHTData(temperature: TemperatureState(value: 30.0),
                                           humidity: HumidityState(value: 23.0),
                                           isVerified: false)
         
@@ -425,14 +559,14 @@ struct THSensorMonitor: View {
         humidityRaw = formattedRawData.humidityHigh + formattedRawData.humidityLow
         temperatureRaw = formattedRawData.temperatureHigh + formattedRawData.temperatureLow
         
-        organizedData.isVerified = verifiedTHData(from: formattedRawData)
+        organizedData.isVerified = verifiedDHTData(from: formattedRawData)
         organizedData.humidity.value = Double(humidityRaw.toDec()) / 10
         organizedData.temperature.value = Double(temperatureRaw.toDHT22Dec()) / 10
         
         return organizedData
     }
     
-    private func verifiedTHData(from rawData: THRawData) -> Bool {
+    private func verifiedDHTData(from rawData: DHTRawData) -> Bool {
         var data = rawData
         let a = data.humidityHigh.toDec() + data.humidityLow.toDec() + data.temperatureHigh.toDec() + data.temperatureLow.toDec()
         
@@ -501,108 +635,12 @@ struct HumiditySymbol: View {
     }
 }
 
-//MARK: Options Popover
 
-struct THSensorMonitorOptionsPopover: View {
-    @Binding var isPresented: Bool
-    @Binding var options: THSensorMonitorOptions
-    
-    @State private var onEditingOptions = THSensorMonitorOptions()
-    
-    var body: some View {
-        VStack {
-            Form {
-                // Serial Port Picker
-                Picker("COM Port", selection: $onEditingOptions.serialPort) {
-                    ForEach(0..<8) { i in
-                        Text("COM \(i)")
-                            .tag(i)
-                    }
-                }
-                
-                // Baud Rate Stepper
-                Stepper {
-                    HStack {
-                        Text("Baud Rate")
-                        Spacer()
-                        Text("\(availableBaudRates[onEditingOptions.baudRateIndex])")
-                    }
-                } onIncrement: {
-                    baudRateIncrementStep()
-                } onDecrement: {
-                    baudRateDecrementStep()
-                }
-                
-//                Text("Option 3")
-            }
-            .formStyle(.grouped)
-#if os(macOS)
-            .frame(width: 260)
-#endif
-            
-#if os(macOS)
-            Divider()
 
-            // Buttons
-            HStack {
-                Spacer()
-                
-                Button("Confirm") {
-                    options = onEditingOptions
-                    isPresented.toggle()
-                }
-                .keyboardShortcut(.defaultAction)
-                
-                Button("Cancel") {
-                    isPresented.toggle()
-                }
-                .keyboardShortcut(.cancelAction)
-            }
-            .padding()
-#endif
-        }
-        .onAppear {
-            onEditingOptions = options
-        }
-#if os(iOS)
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Confirm") {
-                    options = onEditingOptions
-                    isPresented.toggle()
-                }
-                .keyboardShortcut(.defaultAction)
-            }
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
-                    isPresented.toggle()
-                }
-                .keyboardShortcut(.cancelAction)
-            }
-        }
-#endif
-    }
-    
-    private func baudRateIncrementStep() {
-        onEditingOptions.baudRateIndex -= 1
-                
-                if onEditingOptions.baudRateIndex <= 0 {
-                    onEditingOptions.baudRateIndex = availableBaudRates.count - 1
-                }
-    }
-    
-    private func baudRateDecrementStep() {
-        onEditingOptions.baudRateIndex += 1
-                
-                if onEditingOptions.baudRateIndex > availableBaudRates.count - 1 {
-                    onEditingOptions.baudRateIndex = 0
-                }
-    }
-}
 
-struct THSensorMonitor_Previews: PreviewProvider {
+struct DHTSensorMonitor_Previews: PreviewProvider {
     static var previews: some View {
-//        THSensorMonitorOptionsPopover(isPresented: .constant(true), options: .constant(THSensorMonitorOptions()))
-        THSensorMonitor()
+//        DHTSensorMonitorOptionsPopover(isPresented: .constant(true), options: .constant(DHTSensorMonitorOptions()))
+        DHTSensorMonitor()
     }
 }

@@ -1,5 +1,5 @@
 //
-//  THSensorRecords.swift
+//  DHTSensorRecords.swift
 //  QuickSensor
 //
 //  Created by 徐嗣苗 on 2022/10/23.
@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct THSensorRecords: View {
+struct DHTSensorRecords: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \THData.timestamp, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \DHTData.timestamp, ascending: true)],
         animation: .default)
     
-    private var items: FetchedResults<THData>
+    private var items: FetchedResults<DHTData>
     
     @State private var selection: String?
     
@@ -140,8 +140,8 @@ struct TemperatureProgressViewStyle: ProgressViewStyle {
     }
 }
 
-struct THRecordsView_Previews: PreviewProvider {
+struct DHTRecordsView_Previews: PreviewProvider {
     static var previews: some View {
-        THSensorRecords()
+        DHTSensorRecords()
     }
 }
