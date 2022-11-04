@@ -8,4 +8,106 @@
 import Foundation
 import Network
 
+let socketQueue = DispatchQueue.global()
 
+var connection = NWConnection(host: "10.10.100.100",
+                              port: 8899,
+                              using: .tcp)
+
+var receivedRawData: [String] = []
+
+func connectToServer() {
+    //设置连接参数
+    var params: NWParameters!
+    
+    //使用 TCP 协议
+    params = NWParameters.tcp
+    //仅使用 Wi-Fi
+    params.prohibitedInterfaceTypes = [.wifi]
+    //禁止代理
+    params.preferNoProxies = true
+    
+//    connection = NWConnection(host: NWEndpoint.Host(hostname),
+//                              port: NWEndpoint.Port(port)!,
+//                              using: params)
+    
+    //开始连接
+    connection.start(queue: socketQueue)
+    
+    //监听连接状态
+    connection.stateUpdateHandler = {
+        (newState) in
+        switch newState {
+        case .ready:
+            print("state ready")
+//            print("Succeeded to connect to " + hostname + ": " + port ")
+            
+        case .cancelled:
+            print("state cancel")
+        case .waiting(let error):
+            print("state waiting \(error)")
+            if error == NWError.posix(.ECONNREFUSED) {
+                connection.cancel()
+//                receivedMessage.append("Connection refused.\n")
+            }
+        case .failed(let error):
+            print("state failed \(error)")
+        case .preparing:
+            print("state preparing")
+        case .setup:
+            print("state setup")
+        default:
+            break
+        }
+    }
+}
+
+
+func receiveMessage() {
+    let maxLengthOfTCPPacket = 65536
+    
+    connection.receive(minimumIncompleteLength: 1,
+                       maximumLength: maxLengthOfTCPPacket,
+                       completion: { (content, context, isComplete, receError) in
+        if let receError = receError {
+            print(receError)
+            return
+            
+        } else {
+            let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
+            print(data!)
+//            receivedMessage += "\(data!)\n"
+            if data!.isBinary() {
+                receivedRawData.append(data!)
+                print("receivedRawData appended \(data!)")
+            }
+        }
+        
+        if isComplete {
+            //关闭资源
+            connection.cancel()
+            return
+            
+        }
+        receiveMessage()
+    })
+}
+
+func disconnectToServer() {
+    connection.cancel()
+//    receivedMessage += "Disconnected to " + hostname + ": " + port + "\n"
+    print(receivedRawData)
+}
+
+func sendMessage() {
+    let content = "CC EE 02 NO 01 00 00 FF"
+    
+    connection.send(content: content.data(using: .utf8),
+                    completion: .contentProcessed({ (sendError) in
+        if let sendError = sendError {
+            print(sendError)
+        } else {
+            print("Sent: \(content)\n")
+        }
+    }))
+}

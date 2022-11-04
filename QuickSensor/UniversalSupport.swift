@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Network
 
 //将字符串拷贝到系统剪贴板
 func copyToClipBoard(textToCopy: String) {
@@ -40,7 +41,7 @@ extension String {
     //例: "01011001".isBinary() -> true
     func isBinary() -> Bool {
         var isBinary = true
-        var splitedString = self.split(separator: "")
+        let splitedString = self.split(separator: "")
         for character in splitedString {
             if character != "0" && character != "1" {
                 isBinary = false
@@ -49,6 +50,20 @@ extension String {
         }
         
         return isBinary
+    }
+    
+    //判断字符串是否能用于端口号
+    //例: "8080".isNWPort() -> true
+    func isNWPort() -> Bool {
+        var isNWPort = true
+        
+        if NWEndpoint.Port(self) != nil {
+            
+        } else {
+            isNWPort = false
+        }
+        
+        return isNWPort
     }
     
     //将二进制字符串转换为每 4 位空一格的易读形式
