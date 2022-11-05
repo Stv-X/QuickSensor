@@ -11,7 +11,7 @@ import Charts
 
 var firstElementIsDirty = false
 
-//温度等级，用于绘制监视器视图中的动态温度计符号
+// 温度等级，用于绘制监视器视图中的动态温度计符号
 enum TemperatureLevel: String, CaseIterable, Identifiable {
     case low
     case medium
@@ -20,38 +20,38 @@ enum TemperatureLevel: String, CaseIterable, Identifiable {
     var id: Self { self }
 }
 
-//温度记录，为温度柱状图表提供数据
+// 温度记录，为温度柱状图表提供数据
 struct TemperatureRecord: Identifiable {
     var value: Double
     var timestamp: Date
     var id = UUID()
 }
 
-//湿度记录，为湿度柱状图表提供数据
+// 湿度记录，为湿度柱状图表提供数据
 struct HumidityRecord: Identifiable {
     var value: Double
     var timestamp: Date
     var id = UUID()
 }
 
-//温度状态，包含一个以标准单位真实值表示温度数值的 value 属性
+// 温度状态，包含一个以标准单位真实值表示温度数值的 value 属性
 struct TemperatureState: Equatable {
     var value: Double
 }
 
-//湿度状态，包含一个以标准单位真实值表示湿度数值的 value 属性
+// 湿度状态，包含一个以标准单位真实值表示湿度数值的 value 属性
 struct HumidityState: Equatable {
     var value: Double
 }
 
-//整理好的数据，包含温度状态、湿度状态、校验结果
+// 整理好的数据，包含温度状态、湿度状态、校验结果
 struct OrganizedDHTData {
     var temperature: TemperatureState
     var humidity: HumidityState
     var isVerified: Bool
 }
 
-//经过 DHT22 协议规定分类好的二进制原始数据，包括湿度高8位、湿度低8位、温度高8位、温度低8位、校验位
+// 经过 DHT22 协议规定分类好的二进制原始数据，包括湿度高8位、湿度低8位、温度高8位、温度低8位、校验位
 struct DHTRawData {
     var humidityHigh: String
     var humidityLow: String
@@ -60,7 +60,7 @@ struct DHTRawData {
     var verifyBit: String
 }
 
-//温湿度传感器监视器视图中可调节的选项
+// 温湿度传感器监视器视图中可调节的选项
 struct DHTSensorMonitorOptions {
     var serialPort: Int = 0
     var baudRateIndex: Int = availableBaudRates.count - 1
@@ -69,7 +69,7 @@ struct DHTSensorMonitorOptions {
 }
 
 
-//随机生成满足校验要求的温湿度二进制数据字符串
+// 随机生成满足校验要求的温湿度二进制数据字符串
 func randomDHTSensorRawData() -> String {
     var data = ""
     var temperature: Int
@@ -109,9 +109,9 @@ func randomDHTSensorRawData() -> String {
     return data
 }
 
-//将十进制温湿度转换为满足 DHT22 协议的 16 位二进制原始数据字符串
-//输入: 温湿度的十进制原始数据（比标准单位数据大 10 倍）
-//例：rawDHTData(of: 386) -> "0000000100001101"
+// 将十进制温湿度转换为满足 DHT22 协议的 16 位二进制原始数据字符串
+// 输入: 温湿度的十进制原始数据（比标准单位数据大 10 倍）
+// 例：rawDHTData(of: 386) -> "0000000100001101"
 func rawDHTData(of data: Int) -> String {
     var rawData = ""
     if data < 0 {
@@ -136,8 +136,8 @@ func rawDHTData(of data: Int) -> String {
     return rawData
 }
 
-//从 16 位二进制原始数据字符串中获取高 8 位
-//例: highBit(of: "0000000100001101") -> "00000001"
+// 从 16 位二进制原始数据字符串中获取高 8 位
+// 例: highBit(of: "0000000100001101") -> "00000001"
 func highBit(of rawDHTData: String) -> String {
     var highBit = ""
     
@@ -148,8 +148,8 @@ func highBit(of rawDHTData: String) -> String {
     return highBit
 }
 
-//从 16 位二进制原始数据字符串中获取低 8 位
-//例: highBit(of: "0000000100001101") -> "00001101"
+// 从 16 位二进制原始数据字符串中获取低 8 位
+// 例: highBit(of: "0000000100001101") -> "00001101"
 func lowBit(of rawDHTData: String) -> String {
     var lowBit = ""
     
@@ -162,8 +162,8 @@ func lowBit(of rawDHTData: String) -> String {
 
 extension DHTRawData {
     
-    //将格式化后的原始数据对应地记录到 DHTRawData 的各项属性（湿度高8位、湿度低8位、温度高8位、温度低8位、校验位）中
-    //例：
+    // 将格式化后的原始数据对应地记录到 DHTRawData 的各项属性（湿度高8位、湿度低8位、温度高8位、温度低8位、校验位）中
+    //  例：
     // let formattedRaw = [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0]
     // rawDHTData.map(from: formattedRaw) -> DHTRawData(humidityHigh: "00000010", humidityLow: "10010010", temperatureHigh: "00000001", temperatureLow: "00001101", verifyBit: "10100010")
     mutating func map(from formattedRawData: [Int]) {
@@ -180,9 +180,9 @@ extension DHTRawData {
 
 extension String {
     
-    //将二进制字符串转换为满足 DHT22 传感器协议的十进制数字
+    // 将二进制字符串转换为满足 DHT22 传感器协议的十进制数字
     //                    [当温度低于 0 °C 时温度数据的最高位置 1]
-    //例: "01011001".toTDec() -> 89
+    // 例: "01011001".toTDec() -> 89
     //    "11011001".toTDec() -> -89
     mutating func toDHT22Dec() -> Int {
         if self.isBinary() {

@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-let socketQueue = DispatchQueue.global()
+let socketQueue = DispatchQueue(label: "TCP Client Queue")
 
 var connection = NWConnection(host: "10.10.100.100",
                               port: 8899,
@@ -17,38 +17,36 @@ var connection = NWConnection(host: "10.10.100.100",
 var receivedRawData: [String] = []
 
 func connectToServer(host: String, port: String) {
-    //设置连接参数
+    // 设置连接参数
     var params: NWParameters!
     
-    //使用 TCP 协议
+    // 使用 TCP 协议
     params = NWParameters.tcp
-    //仅使用 Wi-Fi
+    // 仅使用 Wi-Fi
     params.prohibitedInterfaceTypes = [.wifi]
-    //禁止代理
+    // 禁止代理
     params.preferNoProxies = true
     
     connection = NWConnection(host: NWEndpoint.Host(host),
                               port: NWEndpoint.Port(port)!,
                               using: params)
     
-    //开始连接
+    // 开始连接
     connection.start(queue: socketQueue)
     
-    //监听连接状态
+    // 监听连接状态
     connection.stateUpdateHandler = {
         (newState) in
         switch newState {
         case .ready:
             print("state ready")
-//            print("Succeeded to connect to " + hostname + ": " + port ")
-            
         case .cancelled:
             print("state cancel")
         case .waiting(let error):
             print("state waiting \(error)")
+            // 主机拒绝连接，自动断开
             if error == NWError.posix(.ECONNREFUSED) {
                 connection.cancel()
-//                receivedMessage.append("Connection refused.\n")
             }
         case .failed(let error):
             print("state failed \(error)")
@@ -75,8 +73,8 @@ func receiveMessage() {
             
         } else {
             let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
-            print(data!)
-//            receivedMessage += "\(data!)\n"
+            
+
             if data!.isBinary() {
                 receivedRawData.append(data!)
                 print("receivedRawData appended \(data!)")
@@ -84,7 +82,7 @@ func receiveMessage() {
         }
         
         if isComplete {
-            //关闭资源
+            // 关闭资源
             connection.cancel()
             return
             
@@ -95,7 +93,6 @@ func receiveMessage() {
 
 func disconnectToServer() {
     connection.cancel()
-//    receivedMessage += "Disconnected to " + hostname + ": " + port + "\n"
     
     print(receivedRawData)
     receivedRawData.removeAll()
@@ -108,7 +105,7 @@ func sendMessage(_ content: String) {
         if let sendError = sendError {
             print(sendError)
         } else {
-//            print("Sent: \(content)\n")
+
         }
     }))
 }

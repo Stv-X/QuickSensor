@@ -143,7 +143,6 @@ struct DHTSensorMonitor: View {
             }
             
             ToolbarItemGroup(placement: .primaryAction) {
-//                SensorDataRefreshButton
                 OptionsButton
             }
             
@@ -166,14 +165,6 @@ struct DHTSensorMonitor: View {
             }
         }
         #endif
-        
-//        .onReceive(autoRefreshTimer) { _ in
-//            if isdataListeningEnabled {
-//                withAnimation {
-//                    sensorRefreshAction()
-//                }
-//            }
-//        }
     }
     
     //MARK: Toolbar Buttons
@@ -194,18 +185,6 @@ struct DHTSensorMonitor: View {
         }
     }
     
-    // 􀈄 Manual Refresh
-    private var SensorDataRefreshButton: some View {
-        Button {
-            withAnimation {
-//                sensorRefreshAction()
-            }
-        } label: {
-            Label("Refresh", systemImage: "square.and.arrow.down")
-        }
-        .disabled(isdataListeningEnabled)
-    }
-    
     // 􀌆 Options
     private var OptionsButton: some View {
         Button {
@@ -224,7 +203,7 @@ struct DHTSensorMonitor: View {
 #endif
     }
     
-    //MARK: Details Group
+    // MARK: Details Group
     
     private var DetailsGroup: some View {
         HStack {
@@ -310,7 +289,7 @@ struct DHTSensorMonitor: View {
         }
     }
     
-    //MARK: Private Functions
+    // MARK: Private Functions
     
     private func onAppearAction() {
         if !items.isEmpty {
@@ -325,7 +304,6 @@ struct DHTSensorMonitor: View {
         if temperatureRecords.isEmpty && humidityRecords.isEmpty {
             temperatureRecords.append(TemperatureRecord(value: temperatureState.value, timestamp: Date()))
             humidityRecords.append(HumidityRecord(value: humidityState.value, timestamp: Date()))
-//            addItem()
         }
         
     }
@@ -347,24 +325,24 @@ struct DHTSensorMonitor: View {
     }
     
   private func connectToServerOfDHT(host: String, port: String) {
-      //设置连接参数
+      // 设置连接参数
       var params: NWParameters!
       
-      //使用 TCP 协议
+      // 使用 TCP 协议
       params = NWParameters.tcp
-      //仅使用 Wi-Fi
+      // 仅使用 Wi-Fi
       params.prohibitedInterfaceTypes = [.wifi]
-      //禁止代理
+      // 禁止代理
       params.preferNoProxies = true
       
       connection = NWConnection(host: NWEndpoint.Host(host),
                                 port: NWEndpoint.Port(port)!,
                                 using: params)
       
-      //开始连接
+      // 开始连接
       connection.start(queue: socketQueue)
       
-      //监听连接状态
+      // 监听连接状态
       connection.stateUpdateHandler = {
           (newState) in
           switch newState {
@@ -379,11 +357,13 @@ struct DHTSensorMonitor: View {
               print("state cancel")
           case .waiting(let error):
               print("state waiting \(error)")
+              
+              // 主机拒绝连接，自动断开
               if error == NWError.posix(.ECONNREFUSED) {
                   connection.cancel()
                   self.isdataListeningEnabled = false
-  //                receivedMessage.append("Connection refused.\n")
               }
+              
           case .failed(let error):
               print("state failed \(error)")
           case .preparing:
@@ -412,44 +392,6 @@ struct DHTSensorMonitor: View {
 #endif
     }
     
-//    private func sensorRefreshAction() {
-//
-//        var maxStorage = 64
-//
-//        #if os(iOS)
-//        if horizontalSizeClass == .compact {
-//            maxStorage = 32
-//        }
-//        #endif
-//
-//        receivedRawData = rawDataFromServer()
-//
-//        temperatureState.value = organizedData(from: receivedRawData).temperature.value
-//        humidityState.value = organizedData(from: receivedRawData).humidity.value
-//
-//        if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
-//            temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
-//        } else {
-//            temperatureRecords.append(TemperatureRecord(value: temperatureState.value, timestamp: Date()))
-//        }
-//
-//        if humidityRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
-//            humidityRecords[humidityRecords.count - 1].value = humidityState.value
-//        } else {
-//            humidityRecords.append(HumidityRecord(value: humidityState.value, timestamp: Date()))
-//        }
-//
-//        if temperatureRecords.count >= maxStorage {
-//            temperatureRecords.remove(at: 0)
-//        }
-//        if humidityRecords.count >= maxStorage {
-//            humidityRecords.remove(at: 0)
-//        }
-//
-//        addItem()
-//
-//    }
-    
     private func receiveRawDataFromServer() {
         let maxLengthOfTCPPacket = 65536
         var maxStorage = 64
@@ -472,8 +414,6 @@ struct DHTSensorMonitor: View {
                 
             } else {
                 let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
-//                print(data!)
-//                receivedRawData = data!
                 
                 if data!.isBinary() && !firstElementIsDirty {
                     withAnimation {
@@ -509,7 +449,7 @@ struct DHTSensorMonitor: View {
             }
             
             if isComplete {
-                //关闭资源
+                // 关闭资源
                 connection.cancel()
                 return
                 
@@ -606,7 +546,7 @@ struct DHTSensorMonitor: View {
     
 }
 
-//MARK: Dynamic Symbols
+// MARK: Dynamic Symbols
 // 􀇬 Temperature
 struct ThermometerSymbol: View {
     @Binding var level: TemperatureLevel
@@ -641,7 +581,6 @@ struct HumiditySymbol: View {
 
 struct DHTSensorMonitor_Previews: PreviewProvider {
     static var previews: some View {
-//        DHTSensorMonitorOptionsPopover(isPresented: .constant(true), options: .constant(DHTSensorMonitorOptions()))
         DHTSensorMonitor()
     }
 }

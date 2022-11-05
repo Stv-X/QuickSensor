@@ -59,8 +59,6 @@ struct DHTSensorMonitorOptionsModal: View {
                 } onDecrement: {
                     baudRateDecrementStep()
                 }
-                
-//                Text("Option 3")
             }
             .formStyle(.grouped)
 #if os(macOS)
