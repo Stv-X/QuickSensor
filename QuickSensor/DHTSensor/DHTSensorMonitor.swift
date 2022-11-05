@@ -415,7 +415,7 @@ struct DHTSensorMonitor: View {
             } else {
                 let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
                 
-                if data!.isBinary() && !firstElementIsDirty {
+                if data!.isBinary() && !firstElementIsDirty && data != "" {
                     withAnimation {
                         receivedRawData = data!
                         
