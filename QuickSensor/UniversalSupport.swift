@@ -44,6 +44,11 @@ extension String {
     func isBinary() -> Bool {
         var isBinary = true
         let splitedString = self.split(separator: "")
+        
+        if self == "" {
+            return false
+        }
+        
         for character in splitedString {
             if character != "0" && character != "1" {
                 isBinary = false

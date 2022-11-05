@@ -45,7 +45,7 @@ struct DHTSensorMonitor: View {
         VStack {
             Grid(horizontalSpacing: 20, verticalSpacing: verticalSpacingForHorizontalSizeClass()) {
                 GridRow {
-                    ThermometerSymbol(level: $temperatureLevel)
+                    ThermometerSymbol
                         .onChange(of: temperatureState) { _ in
                             temperatureLevel = updatedTemperatureLevel()
                         }
@@ -58,29 +58,7 @@ struct DHTSensorMonitor: View {
                         .frame(width: 140)
 #endif
                     
-                    Chart {
-                        ForEach(temperatureRecords) { record in
-                            BarMark(
-                                x: .value("Timestamp", record.timestamp.formatted(date: .omitted, time: .standard)),
-                                y: .value("Temperature", record.value)
-                                
-                            )
-                            .foregroundStyle(temperatureChartBarMarkGradient(from: record))
-                            
-                            
-                        }
-                    }
-                    .chartXAxis(.hidden)
-                    .chartYAxis {
-                        AxisMarks(values: .stride(by: 20)) { value in
-                            AxisGridLine()
-                            AxisValueLabel(LocalizedStringKey(stringLiteral: (value.index == 2 || value.index == 4) ? "" : "\(value.index * 20 - 20)°C"))
-                        }
-                    }
-                    .chartYScale(domain: -20...80)
-#if os(iOS)
-                    .chartYAxis(horizontalSizeClass == .compact ? .hidden : .visible)
-#endif
+                    TemperatureChart
                     .padding(.trailing)
                     .frame(height: 80)
                 }
@@ -88,7 +66,7 @@ struct DHTSensorMonitor: View {
                 
                 Divider()
                 GridRow {
-                    HumiditySymbol()
+                    HumiditySymbol
                     
                     Text("\(NSNumber(value: Double(String(format:"%.1f", humidityState.value))!))%")
                         .font(.system(.largeTitle, design: .rounded))
@@ -98,27 +76,7 @@ struct DHTSensorMonitor: View {
                         .frame(width: 140)
 #endif
                     
-                    Chart {
-                        ForEach(humidityRecords) { record in
-                            BarMark(
-                                x: .value("Timestamp", record.timestamp.formatted(date: .omitted, time: .standard)),
-                                y: .value("Humidity", record.value)
-                            )
-                            
-                            .foregroundStyle(humidityChartBarMarkGradient(from: record))
-                        }
-                    }
-                    .chartXAxis(.hidden)
-                    .chartYAxis {
-                        AxisMarks(values: .stride(by: 25)) { value in
-                            AxisGridLine()
-                            AxisValueLabel(LocalizedStringKey(stringLiteral: value.index % 2 == 0 ? "\(value.index * 25)%" : ""))
-                        }
-                    }
-                    .chartYScale(domain: 0...100)
-#if os(iOS)
-                    .chartYAxis(horizontalSizeClass == .compact ? .hidden : .visible)
-#endif
+                    HumidityChart
                     .padding(.trailing)
                     .frame(height: 80)
                 }
@@ -129,7 +87,7 @@ struct DHTSensorMonitor: View {
             Divider()
             
             DisclosureGroup("Details") {
-                DetailsGroup
+                DHTSensorMonitorDetailsGroup(receivedRawData: $receivedRawData)
                 .padding(.vertical)
             }
             .padding(.horizontal)
@@ -165,6 +123,58 @@ struct DHTSensorMonitor: View {
             }
         }
         #endif
+    }
+    
+    //MARK: Charts
+    
+    // Temperature Chart
+    private var TemperatureChart: some View {
+        Chart {
+            ForEach(temperatureRecords) { record in
+                BarMark(
+                    x: .value("Timestamp", record.timestamp.formatted(date: .omitted, time: .standard)),
+                    y: .value("Temperature", record.value)
+                    
+                )
+                .foregroundStyle(temperatureChartBarMarkGradient(from: record))
+            }
+        }
+        .chartXAxis(.hidden)
+        .chartYAxis {
+            AxisMarks(values: .stride(by: 20)) { value in
+                AxisGridLine()
+                AxisValueLabel(LocalizedStringKey(stringLiteral: (value.index == 2 || value.index == 4) ? "" : "\(value.index * 20 - 20)°C"))
+            }
+        }
+        .chartYScale(domain: -20...80)
+#if os(iOS)
+        .chartYAxis(horizontalSizeClass == .compact ? .hidden : .visible)
+#endif
+    }
+    
+    // Humidity Chart
+    private var HumidityChart: some View {
+        Chart {
+            ForEach(humidityRecords) { record in
+                BarMark(
+                    x: .value("Timestamp", record.timestamp.formatted(date: .omitted, time: .standard)),
+                    y: .value("Humidity", record.value)
+                )
+                
+                .foregroundStyle(humidityChartBarMarkGradient(from: record))
+            }
+        }
+        .chartXAxis(.hidden)
+        .chartYAxis {
+            AxisMarks(values: .stride(by: 25)) { value in
+                AxisGridLine()
+                AxisValueLabel(LocalizedStringKey(stringLiteral: value.index % 2 == 0 ? "\(value.index * 25)%" : ""))
+            }
+        }
+        .chartYScale(domain: 0...100)
+#if os(iOS)
+        .chartYAxis(horizontalSizeClass == .compact ? .hidden : .visible)
+#endif
     }
     
     //MARK: Toolbar Buttons
@@ -203,90 +213,26 @@ struct DHTSensorMonitor: View {
 #endif
     }
     
-    // MARK: Details Group
+    // MARK: Dynamic Symbols
     
-    private var DetailsGroup: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                GroupBox {
-                    Text(receivedRawData.readableBinary())
-                        .font(.system(.body, design: .monospaced))
-#if os(macOS)
-                        .frame(width: 394)
-#endif
-                        .contextMenu {
-                            Button {
-                                copyToClipBoard(textToCopy: receivedRawData)
-                            } label: {
-                                Label("Copy", systemImage: "doc.on.doc")
-                            }
-                        }
-                    
-                } label: {
-                    Text("Raw Data")
-                }
-                
-                HStack {
-                    GroupBox {
-                        Text("\(formattedRawData(from: receivedRawData).humidityHigh.readableBinary()) \(formattedRawData(from: receivedRawData).humidityLow.readableBinary())")
-                            .font(.system(.body, design: .monospaced))
-#if os(macOS)
-                            .frame(width: 164)
-#endif
-                            .contextMenu {
-                                Button {
-                                    copyToClipBoard(textToCopy: formattedRawData(from: receivedRawData).humidityHigh + formattedRawData(from: receivedRawData).humidityLow)
-                                } label: {
-                                    Label("Copy", systemImage: "doc.on.doc")
-                                }
-                            }
-                        
-                    } label: {
-                        Text("Humidity Raw Data")
-                    }
-                    
-                    GroupBox {
-                        Text("\(formattedRawData(from: receivedRawData).temperatureHigh.readableBinary()) \(formattedRawData(from: receivedRawData).temperatureLow.readableBinary())")
-                            .font(.system(.body, design: .monospaced))
-#if os(macOS)
-                            .frame(width: 164)
-#endif
-                            .contextMenu {
-                                Button {
-                                    copyToClipBoard(textToCopy: formattedRawData(from: receivedRawData).temperatureHigh + formattedRawData(from: receivedRawData).temperatureLow)
-                                } label: {
-                                    Label("Copy", systemImage: "doc.on.doc")
-                                }
-                            }
-                        
-                    } label: {
-                        Text("Temperature Raw Data")
-                    }
-                }
-                
-                GroupBox {
-                    Text(formattedRawData(from: receivedRawData).verifyBit.readableBinary())
-                        .font(.system(.body, design: .monospaced))
-#if os(macOS)
-                        .frame(width: 74)
-#endif
-                        .contextMenu {
-                            Button {
-                                copyToClipBoard(textToCopy: formattedRawData(from: receivedRawData).verifyBit)
-                            } label: {
-                                Label("Copy", systemImage: "doc.on.doc")
-                            }
-                        }
-                    
-                } label: {
-                    Text("Verify Bit")
-                }
-                
-                Spacer()
-            }
-            Spacer()
-            
-        }
+    // 􀇬 Temperature
+    private var ThermometerSymbol: some View {
+        thermometerImage()
+            .imageScale(.large)
+            .font(.largeTitle)
+            .foregroundColor(.red)
+            .symbolRenderingMode(.hierarchical)
+            .padding()
+    }
+    
+    // 􁃚 Humidity
+    private var HumiditySymbol: some View {
+        Image(systemName: "humidity")
+            .imageScale(.large)
+            .font(.largeTitle)
+            .foregroundColor(.blue)
+            .symbolRenderingMode(.hierarchical)
+            .padding()
     }
     
     // MARK: Private Functions
@@ -308,6 +254,8 @@ struct DHTSensorMonitor: View {
         
     }
     
+    // Core Data Support
+    // 将内容持久化存储到本地数据库中
     private func addItem() {
         let newItem = DHTData(context: viewContext)
         newItem.timestamp = Date()
@@ -324,7 +272,9 @@ struct DHTSensorMonitor: View {
         }
     }
     
-  private func connectToServerOfDHT(host: String, port: String) {
+    // Network Support
+    // 建立与输入的主机与端口的连接
+    private func connectToServerOfDHT(host: String, port: String) {
       // 设置连接参数
       var params: NWParameters!
       
@@ -348,8 +298,6 @@ struct DHTSensorMonitor: View {
           switch newState {
           case .ready:
               print("state ready")
-              print("Succeeded to connect to " + host + ":" + port)
-              
               self.isdataListeningEnabled = true
               receiveRawDataFromServer()
               
@@ -357,7 +305,6 @@ struct DHTSensorMonitor: View {
               print("state cancel")
           case .waiting(let error):
               print("state waiting \(error)")
-              
               // 主机拒绝连接，自动断开
               if error == NWError.posix(.ECONNREFUSED) {
                   connection.cancel()
@@ -376,22 +323,7 @@ struct DHTSensorMonitor: View {
       }
   }
     
-    
-    
-    
-
-    private func verticalSpacingForHorizontalSizeClass() -> CGFloat {
-#if os(iOS)
-        if horizontalSizeClass == .compact {
-            return 8
-        } else {
-            return 16
-        }
-#else
-        return 16
-#endif
-    }
-    
+    // 从服务端获取数据并经由解析更新视图上下文
     private func receiveRawDataFromServer() {
         let maxLengthOfTCPPacket = 65536
         var maxStorage = 64
@@ -415,7 +347,7 @@ struct DHTSensorMonitor: View {
             } else {
                 let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
                 
-                if data!.isBinary() && !firstElementIsDirty && data != "" {
+                if data!.isBinary() && !firstElementIsDirty {
                     withAnimation {
                         receivedRawData = data!
                         
@@ -462,19 +394,7 @@ struct DHTSensorMonitor: View {
         
     }
     
-    private func updatedTemperatureLevel() -> TemperatureLevel {
-        switch temperatureState.value {
-        case -20..<10:
-            return .low
-        case 10..<50:
-            return .medium
-        case 50..<80:
-            return .high
-        default:
-            return .medium
-        }
-    }
-    
+    // Data Parser Support
     private func formattedRawData(from rawData: String) -> DHTRawData {
         let splitedRawData = rawData.split(separator: "")
         var formattedRawData: [Int] = []
@@ -520,6 +440,37 @@ struct DHTSensorMonitor: View {
         }
     }
     
+    
+    // UI Support
+    private func verticalSpacingForHorizontalSizeClass() -> CGFloat {
+#if os(iOS)
+        if horizontalSizeClass == .compact {
+            return 8
+        } else {
+            return 16
+        }
+#else
+        return 16
+#endif
+    }
+    
+    private func updatedTemperatureLevel() -> TemperatureLevel {
+        switch temperatureState.value {
+        case -20..<10:
+            return .low
+        case 10..<50:
+            return .medium
+        case 50..<80:
+            return .high
+        default:
+            return .medium
+        }
+    }
+    
+    private func thermometerImage() -> Image {
+        return Image(systemName: "thermometer.\(temperatureLevel.rawValue)")
+    }
+    
     private func temperatureChartBarMarkGradient(from record: TemperatureRecord) -> LinearGradient {
         return LinearGradient(colors: [.red, .yellow, .teal],
                               startPoint: UnitPoint(x: UnitPoint.top.x,
@@ -545,39 +496,6 @@ struct DHTSensorMonitor: View {
     }
     
 }
-
-// MARK: Dynamic Symbols
-// 􀇬 Temperature
-struct ThermometerSymbol: View {
-    @Binding var level: TemperatureLevel
-    var body: some View {
-        thermometerImage
-            .imageScale(.large)
-            .font(.largeTitle)
-            .foregroundColor(.red)
-            .symbolRenderingMode(.hierarchical)
-            .padding()
-    }
-    
-    private var thermometerImage: some View {
-        return Image(systemName: "thermometer.\(level.rawValue)")
-    }
-}
-
-// 􁃚 Humidity
-struct HumiditySymbol: View {
-    var body: some View {
-        Image(systemName: "humidity")
-            .imageScale(.large)
-            .font(.largeTitle)
-            .foregroundColor(.blue)
-            .symbolRenderingMode(.hierarchical)
-            .padding()
-    }
-}
-
-
-
 
 struct DHTSensorMonitor_Previews: PreviewProvider {
     static var previews: some View {
