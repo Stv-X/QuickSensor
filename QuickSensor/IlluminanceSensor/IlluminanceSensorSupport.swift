@@ -39,3 +39,21 @@ func randomIlluminance() -> Bool {
     }
     
 }
+
+func illuminanceParsedFrom(_ rawValue: String) -> Bool {
+    if rawValue == "EE CC 02 NO 01 00 00 00 00 00 01 00 00 FF" {
+        return true
+    } else {
+        return false
+    }
+}
+
+extension String {
+    func isIlluminanceRawData() -> Bool {
+        if self == "EE CC 02 NO 01 00 00 00 00 00 01 00 00 FF" || self == "EE CC 02 NO 01 00 00 00 00 00 00 00 00 FF" {
+            return true
+        } else {
+            return false
+        }
+    }
+}
