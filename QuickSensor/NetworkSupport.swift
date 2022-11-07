@@ -74,7 +74,7 @@ func receiveMessage() {
         } else {
             let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
             
-
+            
             if data!.isBinary() {
                 receivedRawData.append(data!)
                 print("receivedRawData appended \(data!)")
@@ -105,7 +105,7 @@ func sendMessage(_ content: String) {
         if let sendError = sendError {
             print(sendError)
         } else {
-
+            
         }
     }))
 }

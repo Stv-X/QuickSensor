@@ -21,51 +21,51 @@ struct IlluminanceSensorMonitor: View {
     private let autoRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
-            VStack {
-                HStack {
-                    VStack {
-                        lightbulbSymbol
-                        Text(illuminanceSensorState.isIlluminated ? "Illuminated" : "Not Illuminated")
-                            .font(.system(.title, design: .rounded))
-                            .lineLimit(1)
+        VStack {
+            HStack {
+                VStack {
+                    lightbulbSymbol
+                    Text(illuminanceSensorState.isIlluminated ? "Illuminated" : "Not Illuminated")
+                        .font(.system(.title, design: .rounded))
+                        .lineLimit(1)
 #if os(iOS)
-                            .bold()
-                            .frame(width: 140)
+                        .bold()
+                        .frame(width: 140)
 #endif
-                    }
-                    .padding(.horizontal)
-                    
-                    Spacer()
-                    
-                    Chart(illuminationIntervalRecords) { record in
-                        
-                        BarMark(
-                            xStart: record.start.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
-                            xEnd: record.end.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
-                            y: .value("State", record.state.rawValue.capitalized)
-                        )
-                        .foregroundStyle(barMarkColor(record: record))
-                        
-                    }
-                    
-                    .chartXScale(domain: timestampOfChartBeganPlotting.timeIntervalSince(timestampOfChartBeganPlotting)...timestampOfChartBeganPlotting.addingTimeInterval(20).timeIntervalSince(timestampOfChartBeganPlotting))
-                    
-                    .frame(width: 500, height: 100)
-                    .padding()
-                }
-                
-                Divider()
-                
-                DisclosureGroup("Details") {
-                    DetailsGroup
-                        .padding(.vertical)
                 }
                 .padding(.horizontal)
+                
                 Spacer()
                 
+                Chart(illuminationIntervalRecords) { record in
+                    
+                    BarMark(
+                        xStart: record.start.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
+                        xEnd: record.end.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
+                        y: .value("State", record.state.rawValue.capitalized)
+                    )
+                    .foregroundStyle(barMarkColor(record: record))
+                    
+                }
+                
+                .chartXScale(domain: timestampOfChartBeganPlotting.timeIntervalSince(timestampOfChartBeganPlotting)...timestampOfChartBeganPlotting.addingTimeInterval(20).timeIntervalSince(timestampOfChartBeganPlotting))
+                
+                .frame(width: 500, height: 100)
+                .padding()
             }
+            
+            Divider()
+            
+            DisclosureGroup("Details") {
+                DetailsGroup
+                    .padding(.vertical)
+            }
+            .padding(.horizontal)
+            Spacer()
+            
+        }
         
-            .frame(minWidth: 640, minHeight: 300)
+        .frame(minWidth: 640, minHeight: 300)
         
         .toolbar {
             ToolbarItem(placement: .navigation) {

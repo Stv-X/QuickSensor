@@ -84,16 +84,16 @@ func randomDHTSensorRawData() -> String {
     var temperatureRawLow: String
     
     repeat {
-    humidity = Int.random(in: 0...1000)
-    temperature = Int.random(in: -200...800)
-    
-    humidityRawData = rawDHTData(of: humidity)
-    temperatureRawData = rawDHTData(of: temperature)
-    
-    humidityRawHigh = highBit(of: humidityRawData)
-    humidityRawLow = lowBit(of: humidityRawData)
-    temperatureRawHigh = highBit(of: temperatureRawData)
-    temperatureRawLow = lowBit(of: temperatureRawData)
+        humidity = Int.random(in: 0...1000)
+        temperature = Int.random(in: -200...800)
+        
+        humidityRawData = rawDHTData(of: humidity)
+        temperatureRawData = rawDHTData(of: temperature)
+        
+        humidityRawHigh = highBit(of: humidityRawData)
+        humidityRawLow = lowBit(of: humidityRawData)
+        temperatureRawHigh = highBit(of: temperatureRawData)
+        temperatureRawLow = lowBit(of: temperatureRawData)
         
     } while humidityRawHigh.toDec() + humidityRawLow.toDec() + temperatureRawHigh.toDec() + temperatureRawLow.toDec() > 255
     

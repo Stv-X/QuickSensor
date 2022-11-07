@@ -21,12 +21,12 @@ struct DHTSensorRecords: View {
     var body: some View {
         Table {
             
-            #if os(iOS)
+#if os(iOS)
             TableColumn("Timestamp") {
                 Text("\(($0.timestamp?.formatted(date: .numeric, time: .standard))!)")
             }
             .width(min: 180)
-            #endif
+#endif
             
             
             
@@ -35,7 +35,7 @@ struct DHTSensorRecords: View {
                              value: Double($0.temperature) / 10 + 20,
                              total: 100)
                 .progressViewStyle(TemperatureProgressViewStyle())
-                                
+                
             }
             .width(min: 80)
             
@@ -48,12 +48,12 @@ struct DHTSensorRecords: View {
             }
             .width(min: 60)
             
-            #if os(macOS)
+#if os(macOS)
             TableColumn("Timestamp") {
                 Text("\(($0.timestamp?.formatted(date: .numeric, time: .standard))!)")
             }
             .width(min: 180)
-            #endif
+#endif
             
         } rows: {
             ForEach(items.reversed()) {
@@ -113,7 +113,7 @@ struct HumidityProgressViewStyle: ProgressViewStyle {
 }
 
 struct TemperatureProgressViewStyle: ProgressViewStyle {
-
+    
     let backgroundColor: Color
     init(backgroundColor: Color = .secondary.opacity(0.2)) {
         self.backgroundColor = backgroundColor

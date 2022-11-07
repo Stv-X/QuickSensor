@@ -18,9 +18,9 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             SidebarNavigationList()
-            #if os(macOS)
+#if os(macOS)
                 .navigationSplitViewColumnWidth(min: 130, ideal: 180, max: 200)
-            #endif
+#endif
         } detail: {
             NavigationDetailView()
         }

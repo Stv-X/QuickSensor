@@ -7,14 +7,12 @@
 
 import SwiftUI
 
-
-
 struct SidebarNavigationList: View {
     @EnvironmentObject var store: NavigationStore
     
-    #if os(iOS)
+#if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    #endif
+#endif
     
     @Environment(\.managedObjectContext) private var viewContext
     

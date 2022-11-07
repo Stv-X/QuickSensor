@@ -25,11 +25,11 @@ struct DHTSensorView: View {
                 }
         }
         .navigationTitle("T&H Sensor")
-        #if os(macOS)
+#if os(macOS)
         .padding()
-        #else
+#else
         .navigationBarTitleDisplayMode(.inline)
-        #endif
+#endif
     }
 }
 

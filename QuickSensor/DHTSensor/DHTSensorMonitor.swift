@@ -12,9 +12,9 @@ import Network
 struct DHTSensorMonitor: View {
     
     @Environment(\.managedObjectContext) private var viewContext
-    #if os(iOS)
+#if os(iOS)
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    #endif
+#endif
     
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \DHTData.timestamp, ascending: true)],
@@ -59,8 +59,8 @@ struct DHTSensorMonitor: View {
 #endif
                     
                     TemperatureChart
-                    .padding(.trailing)
-                    .frame(height: 80)
+                        .padding(.trailing)
+                        .frame(height: 80)
                 }
                 .padding(.vertical)
                 
@@ -77,8 +77,8 @@ struct DHTSensorMonitor: View {
 #endif
                     
                     HumidityChart
-                    .padding(.trailing)
-                    .frame(height: 80)
+                        .padding(.trailing)
+                        .frame(height: 80)
                 }
                 .padding(.vertical)
                 
@@ -88,7 +88,7 @@ struct DHTSensorMonitor: View {
             
             DisclosureGroup("Details") {
                 DHTSensorMonitorDetailsGroup(receivedRawData: $receivedRawData)
-                .padding(.vertical)
+                    .padding(.vertical)
             }
             .padding(.horizontal)
             Spacer()
@@ -110,9 +110,9 @@ struct DHTSensorMonitor: View {
             onAppearAction()
         }
         
-        #if os(iOS)
+#if os(iOS)
         .toolbarRole(.browser)
-
+        
         .sheet(isPresented: $isOptionsModalPresented) {
             NavigationStack {
                 DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
@@ -122,7 +122,7 @@ struct DHTSensorMonitor: View {
                 .navigationBarTitleDisplayMode(.inline)
             }
         }
-        #endif
+#endif
     }
     
     //MARK: Charts
@@ -207,8 +207,8 @@ struct DHTSensorMonitor: View {
 #if os(macOS)
         .popover(isPresented: $isOptionsModalPresented) {
             DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                              options: $options,
-                                              isNetworkEndPointPortNumberInvalid: $isNetworkEndPointPortNumberInvalid)
+                                         options: $options,
+                                         isNetworkEndPointPortNumberInvalid: $isNetworkEndPointPortNumberInvalid)
         }
 #endif
     }
@@ -275,64 +275,64 @@ struct DHTSensorMonitor: View {
     // Network Support
     // 建立与输入的主机与端口的连接
     private func connectToServerOfDHT(host: String, port: String) {
-      // 设置连接参数
-      var params: NWParameters!
-      
-      // 使用 TCP 协议
-      params = NWParameters.tcp
-      // 仅使用 Wi-Fi
-      params.prohibitedInterfaceTypes = [.wifi]
-      // 禁止代理
-      params.preferNoProxies = true
-      
-      connection = NWConnection(host: NWEndpoint.Host(host),
-                                port: NWEndpoint.Port(port)!,
-                                using: params)
-      
-      // 开始连接
-      connection.start(queue: socketQueue)
-      
-      // 监听连接状态
-      connection.stateUpdateHandler = {
-          (newState) in
-          switch newState {
-          case .ready:
-              print("state ready")
-              self.isdataListeningEnabled = true
-              receiveRawDataFromServer()
-              
-          case .cancelled:
-              print("state cancel")
-          case .waiting(let error):
-              print("state waiting \(error)")
-              // 主机拒绝连接，自动断开
-              if error == NWError.posix(.ECONNREFUSED) {
-                  connection.cancel()
-                  self.isdataListeningEnabled = false
-              }
-              
-          case .failed(let error):
-              print("state failed \(error)")
-          case .preparing:
-              print("state preparing")
-          case .setup:
-              print("state setup")
-          default:
-              break
-          }
-      }
-  }
+        // 设置连接参数
+        var params: NWParameters!
+        
+        // 使用 TCP 协议
+        params = NWParameters.tcp
+        // 仅使用 Wi-Fi
+        params.prohibitedInterfaceTypes = [.wifi]
+        // 禁止代理
+        params.preferNoProxies = true
+        
+        connection = NWConnection(host: NWEndpoint.Host(host),
+                                  port: NWEndpoint.Port(port)!,
+                                  using: params)
+        
+        // 开始连接
+        connection.start(queue: socketQueue)
+        
+        // 监听连接状态
+        connection.stateUpdateHandler = {
+            (newState) in
+            switch newState {
+            case .ready:
+                print("state ready")
+                self.isdataListeningEnabled = true
+                receiveRawDataFromServer()
+                
+            case .cancelled:
+                print("state cancel")
+            case .waiting(let error):
+                print("state waiting \(error)")
+                // 主机拒绝连接，自动断开
+                if error == NWError.posix(.ECONNREFUSED) {
+                    connection.cancel()
+                    self.isdataListeningEnabled = false
+                }
+                
+            case .failed(let error):
+                print("state failed \(error)")
+            case .preparing:
+                print("state preparing")
+            case .setup:
+                print("state setup")
+            default:
+                break
+            }
+        }
+    }
     
     // 从服务端获取数据并经由解析更新视图上下文
     private func receiveRawDataFromServer() {
         let maxLengthOfTCPPacket = 65536
         var maxStorage = 64
         
-        #if os(iOS)
+#if os(iOS)
         if horizontalSizeClass == .compact {
             maxStorage = 32
         }
-        #endif
+#endif
         
         
         sendMessage("DHT")
@@ -409,8 +409,8 @@ struct DHTSensorMonitor: View {
     
     private func organizedData(from rawData: String) -> OrganizedDHTData {
         var organizedData = OrganizedDHTData(temperature: TemperatureState(value: 30.0),
-                                          humidity: HumidityState(value: 23.0),
-                                          isVerified: false)
+                                             humidity: HumidityState(value: 23.0),
+                                             isVerified: false)
         
         let formattedRawData = formattedRawData(from: rawData)
         
@@ -484,7 +484,7 @@ struct DHTSensorMonitor: View {
                                                   UnitPoint.bottom.y - 20 * ((UnitPoint.top.y - UnitPoint.bottom.y) / CGFloat(record.value))
                                                   : UnitPoint.top.y - 20 * ((UnitPoint.top.y - UnitPoint.bottom.y) / CGFloat(-record.value))
                                                  )
-                             )
+        )
     }
     
     private func humidityChartBarMarkGradient(from record: HumidityRecord) -> LinearGradient {

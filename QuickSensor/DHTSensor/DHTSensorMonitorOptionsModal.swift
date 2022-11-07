@@ -67,7 +67,7 @@ struct DHTSensorMonitorOptionsModal: View {
             
 #if os(macOS)
             Divider()
-
+            
             // Buttons
             HStack {
                 Spacer()
@@ -84,10 +84,10 @@ struct DHTSensorMonitorOptionsModal: View {
                     }
                 }
                 .alert(isPresented: $isNetworkEndPointPortNumberInvalid) {
-                            Alert(title: Text("Invalid Port"),
-                                  message: Text("Please check your port."),
-                                  dismissButton: .default(Text("OK")))
-                        }
+                    Alert(title: Text("Invalid Port"),
+                          message: Text("Please check your port."),
+                          dismissButton: .default(Text("OK")))
+                }
                 
                 .keyboardShortcut(.defaultAction)
                 
@@ -117,10 +117,10 @@ struct DHTSensorMonitorOptionsModal: View {
                     }
                 }
                 .alert(isPresented: $isNetworkEndPointPortNumberInvalid) {
-                            Alert(title: Text("Invalid Port"),
-                                  message: Text("Please check your port."),
-                                  dismissButton: .default(Text("OK")))
-                        }
+                    Alert(title: Text("Invalid Port"),
+                          message: Text("Please check your port."),
+                          dismissButton: .default(Text("OK")))
+                }
                 .keyboardShortcut(.defaultAction)
             }
             ToolbarItem(placement: .cancellationAction) {
@@ -135,17 +135,17 @@ struct DHTSensorMonitorOptionsModal: View {
     
     private func baudRateIncrementStep() {
         onEditingOptions.baudRateIndex -= 1
-                
-                if onEditingOptions.baudRateIndex <= 0 {
-                    onEditingOptions.baudRateIndex = availableBaudRates.count - 1
-                }
+        
+        if onEditingOptions.baudRateIndex <= 0 {
+            onEditingOptions.baudRateIndex = availableBaudRates.count - 1
+        }
     }
     
     private func baudRateDecrementStep() {
         onEditingOptions.baudRateIndex += 1
-                
-                if onEditingOptions.baudRateIndex > availableBaudRates.count - 1 {
-                    onEditingOptions.baudRateIndex = 0
-                }
+        
+        if onEditingOptions.baudRateIndex > availableBaudRates.count - 1 {
+            onEditingOptions.baudRateIndex = 0
+        }
     }
 }
