@@ -12,6 +12,7 @@
 		AA0B31DA2906B5D70098BB49 /* NavigationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0B31D92906B5D70098BB49 /* NavigationDetailView.swift */; };
 		AA0B31DC2906B7720098BB49 /* LaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */; };
 		AA33D6FB2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA33D6FA2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift */; };
+		AA46F260291A521F00D35052 /* DHTSensorProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA46F25F291A521F00D35052 /* DHTSensorProgressView.swift */; };
 		AA5BA7CA29058A6000C266AE /* QuickSensorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */; };
 		AA5BA7CC29058A6000C266AE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7CB29058A6000C266AE /* ContentView.swift */; };
 		AA5BA7CE29058A6100C266AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA5BA7CD29058A6100C266AE /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 		AA0B31D92906B5D70098BB49 /* NavigationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDetailView.swift; sourceTree = "<group>"; };
 		AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
 		AA33D6FA2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHTSensorMonitorDetailsGroup.swift; sourceTree = "<group>"; };
+		AA46F25F291A521F00D35052 /* DHTSensorProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHTSensorProgressView.swift; sourceTree = "<group>"; };
 		AA5BA7C629058A6000C266AE /* QuickSensor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickSensor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSensorApp.swift; sourceTree = "<group>"; };
 		AA5BA7CB29058A6000C266AE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 			children = (
 				AA0B31D529064E790098BB49 /* DHTSensorView.swift */,
 				AA5BA7D829058A8A00C266AE /* DHTSensorMonitor.swift */,
+				AA46F25F291A521F00D35052 /* DHTSensorProgressView.swift */,
 				AA33D6FA2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift */,
 				AA9C52E929152ACE00AD15AA /* DHTSensorMonitorOptionsModal.swift */,
 				AA5BA7DA29058A9500C266AE /* DHTSensorRecords.swift */,
@@ -244,6 +247,7 @@
 				AA5BA7CA29058A6000C266AE /* QuickSensorApp.swift in Sources */,
 				AAE72DBC290E434B0036688A /* IlluminanceSensorView.swift in Sources */,
 				AA9C52EA29152ACE00AD15AA /* DHTSensorMonitorOptionsModal.swift in Sources */,
+				AA46F260291A521F00D35052 /* DHTSensorProgressView.swift in Sources */,
 				AA0B31D629064E790098BB49 /* DHTSensorView.swift in Sources */,
 				AA5BA7DB29058A9500C266AE /* DHTSensorRecords.swift in Sources */,
 				AA0B31DA2906B5D70098BB49 /* NavigationDetailView.swift in Sources */,

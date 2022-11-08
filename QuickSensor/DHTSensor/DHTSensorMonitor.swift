@@ -45,19 +45,20 @@ struct DHTSensorMonitor: View {
         VStack {
             Grid(horizontalSpacing: 20, verticalSpacing: verticalSpacingForHorizontalSizeClass()) {
                 GridRow {
-                    ThermometerSymbol
-                        .onChange(of: temperatureState) { _ in
-                            temperatureLevel = updatedTemperatureLevel()
-                        }
-                    
-                    Text("\(NSNumber(value: Double(String(format:"%.1f", temperatureState.value))!))°C")
-                        .font(.system(.largeTitle, design: .rounded))
-                        .padding(.trailing)
+                    HStack(spacing: 0) {
+                        ThermometerSymbol
+                            .onChange(of: temperatureState) { _ in
+                                temperatureLevel = updatedTemperatureLevel()
+                            }
+                        
+                        Text("\(NSNumber(value: Double(String(format:"%.1f", temperatureState.value))!))°C")
+                            .font(.system(.largeTitle, design: .rounded))
+                            .padding(.trailing)
 #if os(iOS)
-                        .bold()
-                        .frame(width: 140)
+                            .bold()
+                            .frame(width: 140)
 #endif
-                    
+                    }
                     TemperatureChart
                         .padding(.trailing)
                         .frame(height: 80)
@@ -66,16 +67,17 @@ struct DHTSensorMonitor: View {
                 
                 Divider()
                 GridRow {
-                    HumiditySymbol
-                    
-                    Text("\(NSNumber(value: Double(String(format:"%.1f", humidityState.value))!))%")
-                        .font(.system(.largeTitle, design: .rounded))
-                        .padding(.trailing)
+                    HStack {
+                        HumiditySymbol
+                        
+                        Text("\(NSNumber(value: Double(String(format:"%.1f", humidityState.value))!))%")
+                            .font(.system(.largeTitle, design: .rounded))
+                            .padding(.trailing)
 #if os(iOS)
-                        .bold()
-                        .frame(width: 140)
+                            .bold()
+                            .frame(width: 140)
 #endif
-                    
+                    }
                     HumidityChart
                         .padding(.trailing)
                         .frame(height: 80)
