@@ -62,8 +62,6 @@ struct DHTRawData {
 
 // 温湿度传感器监视器视图中可调节的选项
 struct DHTSensorMonitorOptions {
-    var serialPort: Int = 0
-    var baudRateIndex: Int = availableBaudRates.count - 1
     var port: String = "8080"
 }
 

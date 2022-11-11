@@ -28,26 +28,6 @@ struct DHTSensorMonitorOptionsModal: View {
                 }
                 .frame(maxHeight: 20)
                 
-                // Serial Port Picker
-                Picker("COM Port", selection: $onEditingOptions.serialPort) {
-                    ForEach(0..<8) { i in
-                        Text("COM \(i)")
-                            .tag(i)
-                    }
-                }
-                
-                // Baud Rate Stepper
-                Stepper {
-                    HStack {
-                        Text("Baud Rate")
-                        Spacer()
-                        Text("\(availableBaudRates[onEditingOptions.baudRateIndex])")
-                    }
-                } onIncrement: {
-                    baudRateIncrementStep()
-                } onDecrement: {
-                    baudRateDecrementStep()
-                }
             }
             .formStyle(.grouped)
 #if os(macOS)
@@ -95,9 +75,7 @@ struct DHTSensorMonitorOptionsModal: View {
                 Button("Confirm") {
                     if onEditingOptions.port.isNWPort() {
                         options = onEditingOptions
-                        connection = NWConnection(host: NWEndpoint.Host(options.hostname),
-                                                  port: NWEndpoint.Port(options.port)!,
-                                                  using: .tcp)
+                        listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(options.port)!)
                         isPresented.toggle()
                     } else {
                         isNetworkEndPointPortNumberInvalid = true
@@ -118,21 +96,5 @@ struct DHTSensorMonitorOptionsModal: View {
             }
         }
 #endif
-    }
-    
-    private func baudRateIncrementStep() {
-        onEditingOptions.baudRateIndex -= 1
-        
-        if onEditingOptions.baudRateIndex <= 0 {
-            onEditingOptions.baudRateIndex = availableBaudRates.count - 1
-        }
-    }
-    
-    private func baudRateDecrementStep() {
-        onEditingOptions.baudRateIndex += 1
-        
-        if onEditingOptions.baudRateIndex > availableBaudRates.count - 1 {
-            onEditingOptions.baudRateIndex = 0
-        }
     }
 }

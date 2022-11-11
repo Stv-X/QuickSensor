@@ -43,7 +43,7 @@ struct DHTSensorMonitor: View {
     
     var body: some View {
         VStack {
-            Grid(horizontalSpacing: 20, verticalSpacing: verticalSpacingForHorizontalSizeClass()) {
+            Grid(alignment: .leading,horizontalSpacing: 20, verticalSpacing: verticalSpacingForHorizontalSizeClass()) {
                 GridRow {
                     HStack(spacing: 0) {
                         ThermometerSymbol
@@ -67,7 +67,7 @@ struct DHTSensorMonitor: View {
                 
                 Divider()
                 GridRow {
-                    HStack {
+                    HStack(spacing: 0) {
                         HumiditySymbol
                         
                         Text("\(NSNumber(value: Double(String(format:"%.1f", humidityState.value))!))%")
@@ -277,6 +277,11 @@ struct DHTSensorMonitor: View {
     // Network Support
     //  服务端开始监听并处理连接
     private func serverConnectAction() {
+        
+//        //连接参数
+//        let params = NWParameters.tcp
+//        params.prohibitedInterfaceTypes = [.wifi]
+//
         listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(self.options.port)!)
         
         // 处理新加入的连接
@@ -294,6 +299,8 @@ struct DHTSensorMonitor: View {
                 self.isdataListeningEnabled = true
             case .failed(let error):
                 print("Listener failed with error: \(error)")
+            case .setup:
+                print("state setup")
             default:
                 break
             }
