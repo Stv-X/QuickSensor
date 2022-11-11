@@ -185,10 +185,10 @@ struct DHTSensorMonitor: View {
     private var SensorDataAutoRefreshButton: some View {
         Button {
             if isdataListeningEnabled {
-                disconnectToServer()
+                listener.cancel()
                 isdataListeningEnabled.toggle()
             } else {
-                connectToServerOfDHT(host: options.hostname, port: options.port)
+                serverConnectAction()
             }
             
         } label: {
@@ -275,59 +275,35 @@ struct DHTSensorMonitor: View {
     }
     
     // Network Support
-    // 建立与输入的主机与端口的连接
-    private func connectToServerOfDHT(host: String, port: String) {
-        // 设置连接参数
-        var params: NWParameters!
+    //  服务端开始监听并处理连接
+    private func serverConnectAction() {
+        listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(self.options.port)!)
         
-        // 使用 TCP 协议
-        params = NWParameters.tcp
-        // 仅使用 Wi-Fi
-        params.prohibitedInterfaceTypes = [.wifi]
-        // 禁止代理
-        params.preferNoProxies = true
-        
-        connection = NWConnection(host: NWEndpoint.Host(host),
-                                  port: NWEndpoint.Port(port)!,
-                                  using: params)
-        
-        // 开始连接
-        connection.start(queue: socketQueue)
+        // 处理新加入的连接
+        listener.newConnectionHandler = { newConnection in
+            newConnection.start(queue: serverQueue)
+            self.receive(on: newConnection)
+            print(newConnection.endpoint)
+        }
         
         // 监听连接状态
-        connection.stateUpdateHandler = {
-            (newState) in
+        listener.stateUpdateHandler = { newState in
             switch newState {
             case .ready:
-                print("state ready")
+                print("Listening on port: \(String(describing: listener.port))")
                 self.isdataListeningEnabled = true
-                receiveRawDataFromServer()
-                
-            case .cancelled:
-                print("state cancel")
-            case .waiting(let error):
-                print("state waiting \(error)")
-                // 主机拒绝连接，自动断开
-                if error == NWError.posix(.ECONNREFUSED) {
-                    connection.cancel()
-                    self.isdataListeningEnabled = false
-                }
-                
             case .failed(let error):
-                print("state failed \(error)")
-            case .preparing:
-                print("state preparing")
-            case .setup:
-                print("state setup")
+                print("Listener failed with error: \(error)")
             default:
                 break
             }
         }
+        
+        listener.start(queue: serverQueue)
     }
     
-    // 从服务端获取数据并经由解析更新视图上下文
-    private func receiveRawDataFromServer() {
-        let maxLengthOfTCPPacket = 65536
+    //  服务端接收来自 connection 的数据，并通过解析存入数据库、更新视图上下文
+    private func receive(on connection: NWConnection) {
         var maxStorage = 64
         
 #if os(iOS)
@@ -336,19 +312,10 @@ struct DHTSensorMonitor: View {
         }
 #endif
         
-        
-        sendMessage("DHT")
-        
-        connection.receive(minimumIncompleteLength: 1,
-                           maximumLength: maxLengthOfTCPPacket,
-                           completion: { (content, context, isComplete, receError) in
-            if let receError = receError {
-                print(receError)
-                return
-                
-            } else {
+        connection.receive(minimumIncompleteLength: .min, maximumLength: .max) { (content, context, isComplete, error) in
+            if content != nil {
                 let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
-                
+                print("received: \(data!)")
                 if data!.isBinary() && !firstElementIsDirty {
                     withAnimation {
                         receivedRawData = data!
@@ -356,6 +323,7 @@ struct DHTSensorMonitor: View {
                         temperatureState.value = organizedData(from: receivedRawData).temperature.value
                         humidityState.value = organizedData(from: receivedRawData).humidity.value
                         
+                        //如果数据来自同一秒，修改最新的数据，否则添加一个新的数据
                         if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
                             temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
                         } else {
@@ -380,20 +348,21 @@ struct DHTSensorMonitor: View {
                     }
                     firstElementIsDirty = false
                 }
-            }
-            
-            if isComplete {
-                // 关闭资源
-                connection.cancel()
-                return
                 
+                if isComplete {
+                    //关闭资源
+                    listener.cancel()
+                    return
+                    
+                }
+                
+                if error == nil {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + TimeInterval(1)) {
+                        self.receive(on: connection)
+                    }
+                }
             }
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + TimeInterval(1)) {
-                receiveRawDataFromServer()
-            }
-            
-        })
-        
+        }
     }
     
     // Data Parser Support

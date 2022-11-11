@@ -18,17 +18,6 @@ struct DHTSensorMonitorOptionsModal: View {
     var body: some View {
         VStack {
             Form {
-                
-                // Hostname Field
-                HStack {
-                    Text("Connect to address")
-                    Spacer()
-                    TextField("", text: $onEditingOptions.hostname)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 100)
-                }
-                .frame(maxHeight: 20)
-                
                 // Port Field
                 HStack {
                     Text("Port")
@@ -75,9 +64,7 @@ struct DHTSensorMonitorOptionsModal: View {
                 Button("Confirm") {
                     if onEditingOptions.port.isNWPort() {
                         options = onEditingOptions
-                        connection = NWConnection(host: NWEndpoint.Host(options.hostname),
-                                                  port: NWEndpoint.Port(options.port)!,
-                                                  using: .tcp)
+                        listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(options.port)!)
                         isPresented.toggle()
                     } else {
                         isNetworkEndPointPortNumberInvalid = true

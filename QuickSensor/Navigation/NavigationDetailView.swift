@@ -16,8 +16,8 @@ struct NavigationDetailView: View {
             case 0:
                 DHTSensorView()
                     .onDisappear {
-                        if connection.state != .cancelled {
-                            disconnectToServer()
+                        if listener.state != .cancelled {
+                            listener.cancel()
                         }
                     }
             case 1:

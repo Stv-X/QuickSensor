@@ -64,7 +64,6 @@ struct DHTRawData {
 struct DHTSensorMonitorOptions {
     var serialPort: Int = 0
     var baudRateIndex: Int = availableBaudRates.count - 1
-    var hostname: String = "127.0.0.1"
     var port: String = "8080"
 }
 
@@ -217,22 +216,6 @@ extension String {
         } else {
             return 0
         }
-    }
-    
-}
-
-
-func rawDataFromServer() -> String {
-    let data = ""
-    sendMessage("DHT")
-    receiveMessage()
-    
-    if receivedRawData.last == nil {
-        firstElementIsDirty = true
-        return "0000000110010001000000100101101111101111"
-        
-    } else {
-        return data
     }
     
 }

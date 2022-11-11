@@ -72,6 +72,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AA4018A9291BDA8D0096629D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		AA5A8721290AD134002B5F63 /* IlluminanceSensor */ = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +117,7 @@
 			children = (
 				AA5BA7C829058A6000C266AE /* QuickSensor */,
 				AA5BA7C729058A6000C266AE /* Products */,
+				AA4018A9291BDA8D0096629D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -175,6 +183,8 @@
 			dependencies = (
 			);
 			name = QuickSensor;
+			packageProductDependencies = (
+			);
 			productName = QuickSensor;
 			productReference = AA5BA7C629058A6000C266AE /* QuickSensor.app */;
 			productType = "com.apple.product-type.application";
@@ -204,6 +214,8 @@
 				"zh-Hans",
 			);
 			mainGroup = AA5BA7BD29058A6000C266AE;
+			packageReferences = (
+			);
 			productRefGroup = AA5BA7C729058A6000C266AE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
