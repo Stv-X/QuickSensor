@@ -7,16 +7,20 @@
 
 import SwiftUI
 import Charts
+import Network
 
 struct IlluminanceSensorMonitor: View {
     
-    @State private var illuminanceSensorState = IlluminanceSensorState(isIlluminated: false)
-    @State private var illuminationRecords: [IlluminationRecord] = []
-    @State private var illuminationIntervalRecords: [IlluminationIntervalRecord] = []
+    @State private var currentIlluminanceState = IlluminanceSensorState()
+    @State private var illuminanceRecords: [IlluminanceRecord] = []
+    @State private var illuminanceIntervalRecords: [IlluminanceIntervalRecord] = []
     @State private var timestampOfChartBeganPlotting = Date()
+    
+    @State private var receivedRawData = ""
     
     @State private var isAutoRefreshEnabled = false
     @State private var isOptionsPopoverPresented = false
+    @State private var isDataListeningEnabled = false
     
     private let autoRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -25,7 +29,7 @@ struct IlluminanceSensorMonitor: View {
             HStack {
                 VStack {
                     lightbulbSymbol
-                    Text(illuminanceSensorState.isIlluminated ? "Illuminated" : "Not Illuminated")
+                    Text(currentIlluminanceState.isIlluminated ? "Illuminated" : "Not Illuminated")
                         .font(.system(.title, design: .rounded))
                         .lineLimit(1)
 #if os(iOS)
@@ -37,18 +41,34 @@ struct IlluminanceSensorMonitor: View {
                 
                 Spacer()
                 
-                Chart(illuminationIntervalRecords) { record in
+                Chart(illuminanceIntervalRecords) { record in
                     
                     BarMark(
-                        xStart: record.start.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
-                        xEnd: record.end.timeIntervalSince(timestampOfChartBeganPlotting) * 25,
-                        y: .value("State", record.state.rawValue.capitalized)
+                        xStart: .value("Start Time", record.start),
+                        xEnd: .value("End Time", record.end),
+                        y: .value("Record", record.stateStr)
                     )
-                    .foregroundStyle(barMarkColor(record: record))
+                    .foregroundStyle(record.state.isIlluminated ? .yellow : .indigo)
                     
                 }
                 
-                .chartXScale(domain: timestampOfChartBeganPlotting.timeIntervalSince(timestampOfChartBeganPlotting)...timestampOfChartBeganPlotting.addingTimeInterval(20).timeIntervalSince(timestampOfChartBeganPlotting))
+                .chartXAxis {
+                    AxisMarks { value in
+                        AxisGridLine()
+                        AxisValueLabel("""
+                                    \(value.as(PlottableMeasurement.self)!
+                                        .measurement
+                                        .converted(to: .seconds),
+                                    format: .measurement(
+                                        width: .narrow,
+                                        numberFormatStyle: .number.precision(
+                                            .fractionLength(0))
+                                        )
+                                    )
+                                    """)
+                        
+                    }
+                }
                 
                 .frame(width: 500, height: 100)
                 .padding()
@@ -85,7 +105,7 @@ struct IlluminanceSensorMonitor: View {
         .onReceive(autoRefreshTimer) { _ in
             if isAutoRefreshEnabled {
                 withAnimation {
-                    sensorRefreshAction()
+                    sensorDataReceiveAction()
                 }
             }
         }
@@ -93,8 +113,8 @@ struct IlluminanceSensorMonitor: View {
     
     // 􀛭
     var lightbulbSymbol: some View {
-        Image(systemName: illuminanceSensorState.isIlluminated ? "lightbulb.fill" : "lightbulb")
-            .foregroundColor(illuminanceSensorState.isIlluminated ? .yellow : .gray)
+        Image(systemName: currentIlluminanceState.isIlluminated ? "lightbulb.fill" : "lightbulb")
+            .foregroundColor(currentIlluminanceState.isIlluminated ? .yellow : .gray)
             .symbolRenderingMode(.multicolor)
             .font(.largeTitle)
             .imageScale(.large)
@@ -106,13 +126,16 @@ struct IlluminanceSensorMonitor: View {
     // 􀊃 Auto Refresh
     var SensorDataAutoRefreshButton: some View {
         Button {
-            if !isAutoRefreshEnabled {
-                
+            if isDataListeningEnabled {
+                listener.cancel()
+                isDataListeningEnabled = false
+            } else {
+                serverConnectAction()
+                isDataListeningEnabled = true
             }
-            isAutoRefreshEnabled.toggle()
         } label: {
-            Label(isAutoRefreshEnabled ? "Stop" : "Auto",
-                  systemImage: isAutoRefreshEnabled ? "stop.fill" : "play.fill")
+            Label(isDataListeningEnabled ? "Stop" : "Auto",
+                  systemImage: isDataListeningEnabled ? "stop.fill" : "play.fill")
         }
     }
     
@@ -120,12 +143,13 @@ struct IlluminanceSensorMonitor: View {
     private var SensorDataRefreshButton: some View {
         Button {
             withAnimation {
+                sensorDataReceiveAction()
                 
             }
         } label: {
             Label("Refresh", systemImage: "square.and.arrow.down")
         }
-        .disabled(isAutoRefreshEnabled)
+        .disabled(isDataListeningEnabled)
     }
     
     // 􀌆 Options
@@ -135,20 +159,20 @@ struct IlluminanceSensorMonitor: View {
         } label: {
             Label("Options", systemImage: "slider.horizontal.3")
         }
-        .disabled(isAutoRefreshEnabled)
+        .disabled(isDataListeningEnabled)
     }
     
     //MARK: Detaild Group
     var DetailsGroup: some View {
         GroupBox {
-            Text("0101002030101011")
+            Text(receivedRawData)
                 .font(.system(.body, design: .monospaced))
 #if os(macOS)
                 .frame(width: 394)
 #endif
                 .contextMenu {
                     Button {
-                        copyToClipBoard(textToCopy: "0101002030101011")
+                        copyToClipBoard(textToCopy: receivedRawData)
                     } label: {
                         Label("Copy", systemImage: "doc.on.doc")
                     }
@@ -160,52 +184,120 @@ struct IlluminanceSensorMonitor: View {
     }
     
     private func onAppearAction() {
-        illuminanceSensorState.isIlluminated = randomIlluminance()
-        if illuminationRecords.isEmpty {
-            illuminationRecords.append(IlluminationRecord(isIlluminated: illuminanceSensorState.isIlluminated,
-                                                          timestamp: Date()))
-            
-            illuminationIntervalRecords.append(IlluminationIntervalRecord(state:
-                                                                            illuminanceSensorState.isIlluminated ? .isIlluminated : .isNotIlluminated,
-                                                                          start: illuminationRecords.first!.timestamp,
-                                                                          end: illuminationIntervalRecords.isEmpty ? illuminationRecords.last!.timestamp : illuminationRecords.last!.timestamp))
+        illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: true),
+                                                                    start: 0,
+                                                                    end: 0,
+                                                                    startTime: timestampOfChartBeganPlotting,
+                                                                    endTime: timestampOfChartBeganPlotting))
+        
+        illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: false),
+                                                                    start: 0,
+                                                                    end: 0,
+                                                                    startTime: timestampOfChartBeganPlotting,
+                                                                    endTime: timestampOfChartBeganPlotting))
+    }
+    
+    // Network Support
+    //  服务端开始监听并处理连接
+    private func serverConnectAction() {
+        
+        listener = try! NWListener(using: .tcp, on: 8899)
+        
+        // 处理新加入的连接
+        listener.newConnectionHandler = { newConnection in
+            newConnection.start(queue: serverQueue)
+            self.receive(on: newConnection)
+            print(newConnection.endpoint)
+        }
+        
+        // 监听连接状态
+        listener.stateUpdateHandler = { newState in
+            switch newState {
+            case .ready:
+                print("Listening on port: \(String(describing: listener.port))")
+                self.isDataListeningEnabled = true
+            case .failed(let error):
+                print("Listener failed with error: \(error)")
+            case .setup:
+                print("state setup")
+            case .cancelled:
+                print("state cancelled")
+                listener.cancel()
+                
+            default:
+                break
+            }
+        }
+        
+        listener.start(queue: serverQueue)
+    }
+    
+    //  服务端接收来自 connection 的数据，并通过解析存入数据库、更新视图上下文
+    private func receive(on connection: NWConnection) {
+        
+        connection.receive(minimumIncompleteLength: .min, maximumLength: .max) { (content, context, isComplete, error) in
+            if content != nil {
+                let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
+                print("received: \(data!)")
+                
+                if data!.isIlluminanceRawData() {
+                    receivedRawData = data!
+                    withAnimation {
+                        sensorDataReceiveAction()
+                    }
+                }
+                
+                
+                if isComplete {
+                    //关闭资源
+                    listener.cancel()
+                    return
+                    
+                }
+                
+                if error == nil && isDataListeningEnabled {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + TimeInterval(1)) {
+                        self.receive(on: connection)
+                    }
+                }
+            }
         }
     }
     
-    private func sensorRefreshAction() {
-        illuminanceSensorState.isIlluminated = randomIlluminance()
+    
+    private func sensorDataReceiveAction() {
         
-        let lastIlluminationRecord = illuminationRecords.last!
+        currentIlluminanceState = IlluminanceSensorState(isIlluminated: illuminanceParsedFrom(receivedRawData))
         
-        illuminationRecords.append(IlluminationRecord(isIlluminated: illuminanceSensorState.isIlluminated, timestamp: Date()))
+        let timestamp = Date()
         
-        if illuminationRecords.last!.isIlluminated == lastIlluminationRecord.isIlluminated {
-            illuminationIntervalRecords[illuminationIntervalRecords.count - 1].end = illuminationRecords.last!.timestamp
+        illuminanceRecords.append(IlluminanceRecord(state: currentIlluminanceState, timestamp: timestamp))
+        
+        if illuminanceIntervalRecords.count - 2 == 0 {
+            illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: currentIlluminanceState,
+                                                                        start: 0,
+                                                                        end: timestampOfChartBeganPlotting.distance(to: timestamp),
+                                                                        startTime: timestampOfChartBeganPlotting,
+                                                                        endTime: timestamp))
         } else {
-            illuminationIntervalRecords.append(IlluminationIntervalRecord(state: illuminanceSensorState.isIlluminated ? .isIlluminated : .isNotIlluminated, start: lastIlluminationRecord.timestamp, end: illuminationRecords.last!.timestamp))
+            illuminanceIntervalRecords[illuminanceIntervalRecords.count - 1].end = timestampOfChartBeganPlotting.distance(to: timestamp)
+            illuminanceIntervalRecords[illuminanceIntervalRecords.count - 1].endTime = timestamp
             
-            if illuminationIntervalRecords.first!.start.formatted(date: .omitted, time: .standard) == illuminationIntervalRecords.first!.end.formatted(date: .omitted, time: .standard) {
-                illuminationIntervalRecords.remove(at: 0)
+            if illuminanceIntervalRecords.last!.state.isIlluminated != currentIlluminanceState.isIlluminated {
+                
+                illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: currentIlluminanceState,
+                                                                            start: timestampOfChartBeganPlotting.distance(to: timestamp),
+                                                                            end: timestampOfChartBeganPlotting.distance(to: Date()),
+                                                                            startTime: timestamp,
+                                                                            endTime: Date()))
             }
-            
         }
         
-        if illuminationRecords.count == 22 {
-            timestampOfChartBeganPlotting.addTimeInterval(1)
-            illuminationRecords.remove(at: 0)
-            
-            if illuminationIntervalRecords.first!.end.timeIntervalSince(illuminationIntervalRecords.first!.start) <= 1.9 {
-                illuminationIntervalRecords.remove(at: 0)
-            } else {
-                illuminationIntervalRecords[0].start = timestampOfChartBeganPlotting
-            }
-            
-        }
         
     }
     
-    private func barMarkColor(record: IlluminationIntervalRecord) -> Color {
-        if record.state == .isIlluminated {
+    private func barMarkColor(record: IlluminanceIntervalRecord) -> Color {
+        if record.state.isIlluminated {
             return .yellow
             
         } else {

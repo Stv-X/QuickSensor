@@ -26,11 +26,11 @@ struct SidebarNavigationList: View {
     var body: some View {
         List(selection: $store.selection) {
             NavigationLink(value: 0) {
-                DHTSensor
+                IlluminanceSensor
             }
             
             NavigationLink(value: 1) {
-                IlluminanceSensor
+                DHTSensor
             }
         }
         .navigationTitle("QuickSensor")
@@ -45,28 +45,28 @@ struct SidebarNavigationList: View {
                     HStack(spacing: 0) {
                         Image(systemName: "thermometer.medium")
 #if os(iOS)
-                            .foregroundColor(store.selection == 0 ? horizontalSizeClass == .compact ? .red : .white : .red)
+                            .foregroundColor(store.selection == 1 ? horizontalSizeClass == .compact ? .red : .white : .red)
 #else
-                            .foregroundColor(store.selection == 0 ? .white : .red)
+                            .foregroundColor(store.selection == 1 ? .white : .red)
 #endif
                         Text(items.isEmpty ? "--" : "\(NSNumber(value: Double(items.last!.temperature) / 10))°")
                             .frame(width: 42)
 #if os(macOS)
-                            .foregroundColor(store.selection == 0 ? .white : nil)
+                            .foregroundColor(store.selection == 1 ? .white : nil)
 #endif
                     }
                     
                     HStack(spacing: 0) {
                         Image(systemName: "humidity")
 #if os(iOS)
-                            .foregroundColor(store.selection == 0 ? horizontalSizeClass == .compact ? .blue : .white : .blue)
+                            .foregroundColor(store.selection == 1 ? horizontalSizeClass == .compact ? .blue : .white : .blue)
 #else
-                            .foregroundColor(store.selection == 0 ? .white : .blue)
+                            .foregroundColor(store.selection == 1 ? .white : .blue)
 #endif
                         Text(items.isEmpty ? "--" : "\(NSNumber(value: Double(items.last!.humidity) / 10))%")
                             .frame(width: 42)
 #if os(macOS)
-                            .foregroundColor(store.selection == 0 ? .white : nil)
+                            .foregroundColor(store.selection == 1 ? .white : nil)
 #endif
                     }
                 }

@@ -13,15 +13,22 @@ struct NavigationDetailView: View {
     var body: some View {
         if let selection = store.selection {
             switch selection {
+            
             case 0:
-                DHTSensorView()
+                IlluminanceSensorView()
                     .onDisappear {
                         if listener.state != .cancelled {
                             listener.cancel()
                         }
                     }
             case 1:
-                IlluminanceSensorView()
+                DHTSensorView()
+                    .onDisappear {  
+                        if listener.state != .cancelled {
+                            listener.cancel()
+                        }
+                    }
+                
             default:
                 LaunchScreen()
             }

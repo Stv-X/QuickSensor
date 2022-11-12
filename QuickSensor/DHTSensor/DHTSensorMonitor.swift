@@ -32,7 +32,7 @@ struct DHTSensorMonitor: View {
     @State private var humidityRecords: [HumidityRecord] = []
     
     @State private var isOptionsModalPresented = false
-    @State private var isdataListeningEnabled = false
+    @State private var isDataListeningEnabled = false
     
     @State private var isNetworkEndPointPortNumberInvalid = false
     
@@ -184,16 +184,16 @@ struct DHTSensorMonitor: View {
     // 􀊃 Data Listening
     private var SensorDataAutoRefreshButton: some View {
         Button {
-            if isdataListeningEnabled {
+            if isDataListeningEnabled {
                 listener.cancel()
-                isdataListeningEnabled.toggle()
+                isDataListeningEnabled = false
             } else {
                 serverConnectAction()
             }
             
         } label: {
-            Label(isdataListeningEnabled ? "Stop" : "Auto",
-                  systemImage: isdataListeningEnabled ? "stop.fill" : "play.fill")
+            Label(isDataListeningEnabled ? "Stop" : "Auto",
+                  systemImage: isDataListeningEnabled ? "stop.fill" : "play.fill")
         }
     }
     
@@ -204,7 +204,7 @@ struct DHTSensorMonitor: View {
         } label: {
             Label("Options", systemImage: "slider.horizontal.3")
         }
-        .disabled(isdataListeningEnabled)
+        .disabled(isDataListeningEnabled)
         
 #if os(macOS)
         .popover(isPresented: $isOptionsModalPresented) {
@@ -278,10 +278,6 @@ struct DHTSensorMonitor: View {
     //  服务端开始监听并处理连接
     private func serverConnectAction() {
         
-//        //连接参数
-//        let params = NWParameters.tcp
-//        params.prohibitedInterfaceTypes = [.wifi]
-//
         listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(self.options.port)!)
         
         // 处理新加入的连接
@@ -296,11 +292,15 @@ struct DHTSensorMonitor: View {
             switch newState {
             case .ready:
                 print("Listening on port: \(String(describing: listener.port))")
-                self.isdataListeningEnabled = true
+                self.isDataListeningEnabled = true
             case .failed(let error):
                 print("Listener failed with error: \(error)")
             case .setup:
                 print("state setup")
+            case .cancelled:
+                print("state cancelled")
+                listener.cancel()
+                
             default:
                 break
             }
@@ -363,7 +363,7 @@ struct DHTSensorMonitor: View {
                     
                 }
                 
-                if error == nil {
+                if error == nil && isDataListeningEnabled {
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + TimeInterval(1)) {
                         self.receive(on: connection)
                     }

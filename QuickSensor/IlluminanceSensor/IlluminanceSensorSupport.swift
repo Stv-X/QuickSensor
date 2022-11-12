@@ -6,26 +6,41 @@
 //
 
 import Foundation
+import Charts
 
 struct IlluminanceSensorState: Equatable {
+    init() {
+        self.isIlluminated = false
+    }
+    
+    init(isIlluminated: Bool) {
+        self.isIlluminated = isIlluminated
+    }
+    
     var isIlluminated: Bool
 }
 
-struct IlluminationRecord: Identifiable {
-    var isIlluminated: Bool
+struct IlluminanceRecord: Identifiable {
+    var state: IlluminanceSensorState
     var timestamp: Date
     var id = UUID()
 }
 
-enum IlluminationState: String {
-    case isIlluminated
-    case isNotIlluminated
-}
-
-struct IlluminationIntervalRecord: Identifiable {
-    var state: IlluminationState
-    var start: Date
-    var end: Date
+struct IlluminanceIntervalRecord: Identifiable {
+    init(state: IlluminanceSensorState, start: Double, end: Double, startTime: Date, endTime: Date) {
+        self.state = state
+        self.stateStr = state.isIlluminated ? "Light" : "Dark"
+        self.start = start
+        self.end = end
+        self.startTime = startTime
+        self.endTime = endTime
+    }
+    var state: IlluminanceSensorState
+    var stateStr: String
+    var start: Double
+    var end: Double
+    var startTime: Date?
+    var endTime: Date?
     var id = UUID()
 }
 
@@ -37,7 +52,6 @@ func randomIlluminance() -> Bool {
     } else {
         return true
     }
-    
 }
 
 func illuminanceParsedFrom(_ rawValue: String) -> Bool {
@@ -55,5 +69,24 @@ extension String {
         } else {
             return false
         }
+    }
+}
+
+struct PlottableMeasurement<UnitType: Unit> {
+    var measurement: Measurement<UnitType>
+}
+
+extension PlottableMeasurement: Plottable where UnitType == UnitDuration {
+    var primitivePlottable: Double {
+        self.measurement.converted(to: .seconds).value
+    }
+    
+    init?(primitivePlottable: Double) {
+        self.init(
+            measurement: Measurement(
+                value: primitivePlottable,
+                unit: .seconds
+            )
+        )
     }
 }
