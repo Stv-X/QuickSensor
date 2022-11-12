@@ -36,6 +36,9 @@
 		AAABBAB1290A379500775A0F /* IlluminanceSensorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */; };
 		AAAE3EED290B743200F8E7F2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */; };
 		AAAFE89729125EAB00E32A44 /* NetworkSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAFE89629125EAB00E32A44 /* NetworkSupport.swift */; };
+		AAE4553C291FB0D7005A5C90 /* NetworkSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAFE89629125EAB00E32A44 /* NetworkSupport.swift */; };
+		AAE4553D291FB174005A5C90 /* DHTSensorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7DC29058AA000C266AE /* DHTSensorSupport.swift */; };
+		AAE4553E291FB174005A5C90 /* IlluminanceSensorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */; };
 		AAE72DBA290E1E330036688A /* UniversalSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE72DB9290E1E330036688A /* UniversalSupport.swift */; };
 		AAE72DBC290E434B0036688A /* IlluminanceSensorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE72DBB290E434B0036688A /* IlluminanceSensorView.swift */; };
 /* End PBXBuildFile section */
@@ -320,8 +323,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA4C99F6291F9E9B00CD18DB /* QuickSensorOptionsModal.swift in Sources */,
+				AAE4553E291FB174005A5C90 /* IlluminanceSensorSupport.swift in Sources */,
 				AA4C99F7291F9ED800CD18DB /* UniversalSupport.swift in Sources */,
+				AAE4553C291FB0D7005A5C90 /* NetworkSupport.swift in Sources */,
 				AA4C99E4291F5E6600CD18DB /* ContentView.swift in Sources */,
+				AAE4553D291FB174005A5C90 /* DHTSensorSupport.swift in Sources */,
 				AA4C99F2291F5EFB00CD18DB /* QuickSensorListView.swift in Sources */,
 				AA4C99E2291F5E6600CD18DB /* QuickSensorWatchApp.swift in Sources */,
 			);

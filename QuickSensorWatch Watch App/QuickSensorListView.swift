@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Network
 
 enum SensorCategory {
     case illuminance, dht
@@ -15,14 +16,25 @@ struct QuickSensorListView: View {
     @State private var focusedSensor: SensorCategory? = nil
     @State private var isOptionsModalPresented = false
     @State public var options = SensorMonitorOptions()
+    
+    @State private var currentIlluminanceSensorState = IlluminanceSensorState(isIlluminated: true)
+    @State private var currentTemperatureState = TemperatureState(value: 0)
+    @State private var currentHumidityState = HumidityState(value: 0)
+    
+    @State private var isDataListeningEnabled = false
+    
     var body: some View {
         List {
             Button {
                 withAnimation {
+                    
                     if focusedSensor == .illuminance {
                         focusedSensor = nil
+                        isDataListeningEnabled = false
                     } else {
                         focusedSensor = .illuminance
+                        isDataListeningEnabled = true
+
                     }
                 }
             } label: {
@@ -32,10 +44,15 @@ struct QuickSensorListView: View {
             
             Button {
                 withAnimation {
+                    
                     if focusedSensor == .dht {
                         focusedSensor = nil
+                        isDataListeningEnabled = false
+
                     } else {
                         focusedSensor = .dht
+                        isDataListeningEnabled = true
+
                     }
                 }
             } label: {
@@ -83,11 +100,18 @@ struct QuickSensorListView: View {
             
             HStack {
                 Image(systemName: "lightbulb.fill")
-                    .font(.largeTitle)
                     .foregroundColor(focusedSensor == .illuminance ? lightBulbForegroundColor() : nil)
                     .symbolRenderingMode(.multicolor)
                 Spacer()
+                
+                if isDataListeningEnabled && focusedSensor == .illuminance {
+                    Text(currentIlluminanceSensorState.isIlluminated ? "Light" : "Dark")
+                        .foregroundColor(.black)
+                } else {
+                    Text("--")
+                }
             }
+            .font(.largeTitle)
             .padding(.bottom)
         }
         .symbolRenderingMode(.hierarchical)
@@ -115,19 +139,32 @@ struct QuickSensorListView: View {
             HStack {
                 Image(systemName: "thermometer.medium")
                     .foregroundColor(focusedSensor == .dht ? .red : nil)
-                    .font(.largeTitle)
                 Spacer()
+                
+                if isDataListeningEnabled && focusedSensor == .dht {
+                    Text("\(NSNumber(value: Double(String(format:"%.1f", currentTemperatureState.value))!))°C")
+                        .foregroundColor(.black)
+                } else {
+                    Text("--°C")
+                }
             }
+            .font(.largeTitle)
             .padding(.bottom)
             Divider()
                 .foregroundColor(.red)
             HStack {
                 Image(systemName: "humidity")
                     .foregroundColor(focusedSensor == .dht ? .blue : nil)
-                    .font(.largeTitle)
                     .padding(.vertical)
                 Spacer()
+                if isDataListeningEnabled && focusedSensor == .dht {
+                    Text("\(NSNumber(value: Double(String(format:"%.1f", currentHumidityState.value))!))%")
+                        .foregroundColor(.black)
+                } else {
+                    Text("--%")
+                }
             }
+            .font(.largeTitle)
             .padding(.vertical)
         }
         .symbolRenderingMode(.hierarchical)
@@ -136,7 +173,11 @@ struct QuickSensorListView: View {
     //Functions
     
     private func lightBulbForegroundColor() -> Color {
-        return .yellow
+        if currentIlluminanceSensorState.isIlluminated {
+            return .yellow
+        } else {
+            return .indigo
+        }
     }
     
     
