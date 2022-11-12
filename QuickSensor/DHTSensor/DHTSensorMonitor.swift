@@ -36,7 +36,7 @@ struct DHTSensorMonitor: View {
     
     @State private var isNetworkEndPointPortNumberInvalid = false
     
-    @State public var options = DHTSensorMonitorOptions()
+    @State public var options = SensorMonitorOptions()
     
     private let autoRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -117,9 +117,8 @@ struct DHTSensorMonitor: View {
         
         .sheet(isPresented: $isOptionsModalPresented) {
             NavigationStack {
-                DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                             options: $options,
-                                             isNetworkEndPointPortNumberInvalid: $isNetworkEndPointPortNumberInvalid)
+                SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
+                                             options: $options)
                 .navigationTitle("Options")
                 .navigationBarTitleDisplayMode(.inline)
             }
@@ -208,9 +207,8 @@ struct DHTSensorMonitor: View {
         
 #if os(macOS)
         .popover(isPresented: $isOptionsModalPresented) {
-            DHTSensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                         options: $options,
-                                         isNetworkEndPointPortNumberInvalid: $isNetworkEndPointPortNumberInvalid)
+            SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
+                                         options: $options)
         }
 #endif
     }

@@ -18,11 +18,11 @@ struct IlluminanceSensorMonitor: View {
     
     @State private var receivedRawData = ""
     
-    @State private var isAutoRefreshEnabled = false
-    @State private var isOptionsPopoverPresented = false
-    @State private var isDataListeningEnabled = false
+    @State public var options = SensorMonitorOptions()
     
-    private let autoRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var isOptionsModalPresented = false
+    @State private var isDataListeningEnabled = false
+
     
     var body: some View {
         VStack {
@@ -41,34 +41,7 @@ struct IlluminanceSensorMonitor: View {
                 
                 Spacer()
                 
-                Chart(illuminanceIntervalRecords) { record in
-                    
-                    BarMark(
-                        xStart: .value("Start Time", record.start),
-                        xEnd: .value("End Time", record.end),
-                        y: .value("Record", record.stateStr)
-                    )
-                    .foregroundStyle(record.state.isIlluminated ? .yellow : .indigo)
-                    
-                }
-                
-                .chartXAxis {
-                    AxisMarks { value in
-                        AxisGridLine()
-                        AxisValueLabel("""
-                                    \(value.as(PlottableMeasurement.self)!
-                                        .measurement
-                                        .converted(to: .seconds),
-                                    format: .measurement(
-                                        width: .narrow,
-                                        numberFormatStyle: .number.precision(
-                                            .fractionLength(0))
-                                        )
-                                    )
-                                    """)
-                        
-                    }
-                }
+                IlluminanceChart
                 
                 .frame(width: 500, height: 100)
                 .padding()
@@ -77,8 +50,11 @@ struct IlluminanceSensorMonitor: View {
             Divider()
             
             DisclosureGroup("Details") {
-                DetailsGroup
-                    .padding(.vertical)
+                HStack {
+                    DetailsGroup
+                        .padding(.vertical)
+                    Spacer()
+                }
             }
             .padding(.horizontal)
             Spacer()
@@ -100,14 +76,6 @@ struct IlluminanceSensorMonitor: View {
         
         .onAppear {
             onAppearAction()
-        }
-        
-        .onReceive(autoRefreshTimer) { _ in
-            if isAutoRefreshEnabled {
-                withAnimation {
-                    sensorDataReceiveAction()
-                }
-            }
         }
     }
     
@@ -155,11 +123,53 @@ struct IlluminanceSensorMonitor: View {
     // 􀌆 Options
     private var OptionsButton: some View {
         Button {
-            isOptionsPopoverPresented.toggle()
+            isOptionsModalPresented.toggle()
         } label: {
             Label("Options", systemImage: "slider.horizontal.3")
         }
         .disabled(isDataListeningEnabled)
+#if os(macOS)
+        
+        .popover(isPresented: $isOptionsModalPresented) {
+            
+            SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
+                                      options: $options)
+            
+        }
+        
+        
+#endif
+    }
+    
+    private var IlluminanceChart: some View {
+        Chart(illuminanceIntervalRecords) { record in
+            
+            BarMark(
+                xStart: .value("Start Time", record.start),
+                xEnd: .value("End Time", record.end),
+                y: .value("Record", record.stateStr)
+            )
+            .foregroundStyle(record.state.isIlluminated ? .yellow : .indigo)
+            
+        }
+        
+        .chartXAxis {
+            AxisMarks { value in
+                AxisGridLine()
+                AxisValueLabel("""
+                            \(value.as(PlottableMeasurement.self)!
+                                .measurement
+                                .converted(to: .seconds),
+                            format: .measurement(
+                                width: .narrow,
+                                numberFormatStyle: .number.precision(
+                                    .fractionLength(0))
+                                )
+                            )
+                            """)
+                
+            }
+        }
     }
     
     //MARK: Detaild Group
@@ -201,7 +211,7 @@ struct IlluminanceSensorMonitor: View {
     //  服务端开始监听并处理连接
     private func serverConnectAction() {
         
-        listener = try! NWListener(using: .tcp, on: 8899)
+        listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(options.port)!)
         
         // 处理新加入的连接
         listener.newConnectionHandler = { newConnection in

@@ -60,12 +60,6 @@ struct DHTRawData {
     var verifyBit: String
 }
 
-// 温湿度传感器监视器视图中可调节的选项
-struct DHTSensorMonitorOptions {
-    var port: String = "8080"
-}
-
-
 // 随机生成满足校验要求的温湿度二进制数据字符串
 func randomDHTSensorRawData() -> String {
     var data = ""

@@ -18,6 +18,9 @@
 		AA4C99E6291F5E6700CD18DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA4C99E5291F5E6700CD18DB /* Assets.xcassets */; };
 		AA4C99E9291F5E6700CD18DB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA4C99E8291F5E6700CD18DB /* Preview Assets.xcassets */; };
 		AA4C99F2291F5EFB00CD18DB /* QuickSensorListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4C99F1291F5EFB00CD18DB /* QuickSensorListView.swift */; };
+		AA4C99F6291F9E9B00CD18DB /* QuickSensorOptionsModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4C99F5291F9E9A00CD18DB /* QuickSensorOptionsModal.swift */; };
+		AA4C99F7291F9ED800CD18DB /* UniversalSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE72DB9290E1E330036688A /* UniversalSupport.swift */; };
+		AA4C99F8291FA47400CD18DB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA5BA7E729058B4B00C266AE /* Localizable.strings */; };
 		AA5BA7CA29058A6000C266AE /* QuickSensorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */; };
 		AA5BA7CC29058A6000C266AE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7CB29058A6000C266AE /* ContentView.swift */; };
 		AA5BA7CE29058A6100C266AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA5BA7CD29058A6100C266AE /* Assets.xcassets */; };
@@ -28,7 +31,7 @@
 		AA5BA7DF29058AAA00C266AE /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7DE29058AAA00C266AE /* Persistence.swift */; };
 		AA5BA7E229058ABD00C266AE /* QuickSensor.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7E029058ABD00C266AE /* QuickSensor.xcdatamodeld */; };
 		AA5BA7E529058B4B00C266AE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA5BA7E729058B4B00C266AE /* Localizable.strings */; };
-		AA9C52EA29152ACE00AD15AA /* DHTSensorMonitorOptionsModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9C52E929152ACE00AD15AA /* DHTSensorMonitorOptionsModal.swift */; };
+		AA9C52EA29152ACE00AD15AA /* SensorMonitorOptionsModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9C52E929152ACE00AD15AA /* SensorMonitorOptionsModal.swift */; };
 		AAABBAAF290A366800775A0F /* IlluminanceSensorMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */; };
 		AAABBAB1290A379500775A0F /* IlluminanceSensorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */; };
 		AAAE3EED290B743200F8E7F2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */; };
@@ -50,6 +53,7 @@
 		AA4C99E5291F5E6700CD18DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA4C99E8291F5E6700CD18DB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AA4C99F1291F5EFB00CD18DB /* QuickSensorListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSensorListView.swift; sourceTree = "<group>"; };
+		AA4C99F5291F9E9A00CD18DB /* QuickSensorOptionsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSensorOptionsModal.swift; sourceTree = "<group>"; };
 		AA5BA7C629058A6000C266AE /* QuickSensor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickSensor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSensorApp.swift; sourceTree = "<group>"; };
 		AA5BA7CB29058A6000C266AE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -63,7 +67,7 @@
 		AA5BA7E129058ABD00C266AE /* QuickSensor.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QuickSensor.xcdatamodel; sourceTree = "<group>"; };
 		AA5BA7E629058B4B00C266AE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		AA5BA7E829058B5000C266AE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		AA9C52E929152ACE00AD15AA /* DHTSensorMonitorOptionsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHTSensorMonitorOptionsModal.swift; sourceTree = "<group>"; };
+		AA9C52E929152ACE00AD15AA /* SensorMonitorOptionsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorMonitorOptionsModal.swift; sourceTree = "<group>"; };
 		AAABBAAE290A366800775A0F /* IlluminanceSensorMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorMonitor.swift; sourceTree = "<group>"; };
 		AAABBAB0290A379500775A0F /* IlluminanceSensorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IlluminanceSensorSupport.swift; sourceTree = "<group>"; };
 		AAAE3EEC290B743200F8E7F2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -103,6 +107,7 @@
 				AA4C99E1291F5E6600CD18DB /* QuickSensorWatchApp.swift */,
 				AA4C99E3291F5E6600CD18DB /* ContentView.swift */,
 				AA4C99F1291F5EFB00CD18DB /* QuickSensorListView.swift */,
+				AA4C99F5291F9E9A00CD18DB /* QuickSensorOptionsModal.swift */,
 				AA4C99E5291F5E6700CD18DB /* Assets.xcassets */,
 				AA4C99E7291F5E6700CD18DB /* Preview Content */,
 			);
@@ -143,7 +148,6 @@
 				AA5BA7D829058A8A00C266AE /* DHTSensorMonitor.swift */,
 				AA46F25F291A521F00D35052 /* DHTSensorProgressView.swift */,
 				AA33D6FA2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift */,
-				AA9C52E929152ACE00AD15AA /* DHTSensorMonitorOptionsModal.swift */,
 				AA5BA7DA29058A9500C266AE /* DHTSensorRecords.swift */,
 				AA5BA7DC29058AA000C266AE /* DHTSensorSupport.swift */,
 			);
@@ -176,6 +180,7 @@
 				AA5BA7CB29058A6000C266AE /* ContentView.swift */,
 				AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */,
 				AA5BA7DE29058AAA00C266AE /* Persistence.swift */,
+				AA9C52E929152ACE00AD15AA /* SensorMonitorOptionsModal.swift */,
 				AAE72DB9290E1E330036688A /* UniversalSupport.swift */,
 				AAAFE89629125EAB00E32A44 /* NetworkSupport.swift */,
 				AA5A8722290AD149002B5F63 /* Navigation */,
@@ -292,6 +297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA4C99E9291F5E6700CD18DB /* Preview Assets.xcassets in Resources */,
+				AA4C99F8291FA47400CD18DB /* Localizable.strings in Resources */,
 				AA4C99E6291F5E6700CD18DB /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -313,6 +319,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA4C99F6291F9E9B00CD18DB /* QuickSensorOptionsModal.swift in Sources */,
+				AA4C99F7291F9ED800CD18DB /* UniversalSupport.swift in Sources */,
 				AA4C99E4291F5E6600CD18DB /* ContentView.swift in Sources */,
 				AA4C99F2291F5EFB00CD18DB /* QuickSensorListView.swift in Sources */,
 				AA4C99E2291F5E6600CD18DB /* QuickSensorWatchApp.swift in Sources */,
@@ -338,7 +346,7 @@
 				AA5BA7DF29058AAA00C266AE /* Persistence.swift in Sources */,
 				AA5BA7CA29058A6000C266AE /* QuickSensorApp.swift in Sources */,
 				AAE72DBC290E434B0036688A /* IlluminanceSensorView.swift in Sources */,
-				AA9C52EA29152ACE00AD15AA /* DHTSensorMonitorOptionsModal.swift in Sources */,
+				AA9C52EA29152ACE00AD15AA /* SensorMonitorOptionsModal.swift in Sources */,
 				AA46F260291A521F00D35052 /* DHTSensorProgressView.swift in Sources */,
 				AA0B31D629064E790098BB49 /* DHTSensorView.swift in Sources */,
 				AA5BA7DB29058A9500C266AE /* DHTSensorRecords.swift in Sources */,

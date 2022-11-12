@@ -1,5 +1,5 @@
 //
-//  DHTSensorMonitorOptionsModal.swift
+//  SensorMonitorOptionsModal.swift
 //  QuickSensor
 //
 //  Created by 徐嗣苗 on 2022/11/4.
@@ -8,12 +8,12 @@
 import SwiftUI
 import Network
 
-struct DHTSensorMonitorOptionsModal: View {
+struct SensorMonitorOptionsModal: View {
     @Binding var isPresented: Bool
-    @Binding var options: DHTSensorMonitorOptions
-    @Binding var isNetworkEndPointPortNumberInvalid: Bool
+    @Binding var options: SensorMonitorOptions
+    @State private var onEditingOptions = SensorMonitorOptions()
+    @State private var isNetworkEndPointPortNumberInvalid: Bool = false
     
-    @State private var onEditingOptions = DHTSensorMonitorOptions()
     
     var body: some View {
         VStack {

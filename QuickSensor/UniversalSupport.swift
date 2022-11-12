@@ -9,20 +9,22 @@ import SwiftUI
 import UniformTypeIdentifiers
 import Network
 
+
+struct SensorMonitorOptions {
+    var port: String = "8080"
+}
+
 // 将字符串拷贝到系统剪贴板
 func copyToClipBoard(textToCopy: String) {
 #if os(macOS)
     let pasteBoard = NSPasteboard.general
     pasteBoard.clearContents()
     pasteBoard.setString(textToCopy, forType: .string)
-#else
+#elseif os(iOS)
     UIPasteboard.general.setValue(textToCopy,
                                   forPasteboardType: UTType.plainText.identifier)
 #endif
 }
-
-// 可选的波特率
-let availableBaudRates: [Int] = [460800, 345600, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300]
 
 extension Int: Identifiable {
     public typealias ID = Int

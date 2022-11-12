@@ -16,7 +16,7 @@ struct DHTSensorView: View {
                 DHTSensorMonitor()
             }
             .tabItem {
-                Label("T&H", systemImage: "thermometer.medium")
+                Label("DHT", systemImage: "thermometer.medium")
             }
             
             DHTSensorRecords()
@@ -24,7 +24,7 @@ struct DHTSensorView: View {
                     Label("Records", systemImage: "list.bullet.clipboard")
                 }
         }
-        .navigationTitle("T&H Sensor")
+        .navigationTitle("DHT Sensor")
 #if os(macOS)
         .padding()
 #else
