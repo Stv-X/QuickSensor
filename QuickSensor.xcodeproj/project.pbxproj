@@ -13,6 +13,11 @@
 		AA0B31DC2906B7720098BB49 /* LaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */; };
 		AA33D6FB2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA33D6FA2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift */; };
 		AA46F260291A521F00D35052 /* DHTSensorProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA46F25F291A521F00D35052 /* DHTSensorProgressView.swift */; };
+		AA4C99E2291F5E6600CD18DB /* QuickSensorWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4C99E1291F5E6600CD18DB /* QuickSensorWatchApp.swift */; };
+		AA4C99E4291F5E6600CD18DB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4C99E3291F5E6600CD18DB /* ContentView.swift */; };
+		AA4C99E6291F5E6700CD18DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA4C99E5291F5E6700CD18DB /* Assets.xcassets */; };
+		AA4C99E9291F5E6700CD18DB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA4C99E8291F5E6700CD18DB /* Preview Assets.xcassets */; };
+		AA4C99F2291F5EFB00CD18DB /* QuickSensorListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4C99F1291F5EFB00CD18DB /* QuickSensorListView.swift */; };
 		AA5BA7CA29058A6000C266AE /* QuickSensorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */; };
 		AA5BA7CC29058A6000C266AE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5BA7CB29058A6000C266AE /* ContentView.swift */; };
 		AA5BA7CE29058A6100C266AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA5BA7CD29058A6100C266AE /* Assets.xcassets */; };
@@ -39,6 +44,12 @@
 		AA0B31DB2906B7720098BB49 /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
 		AA33D6FA2916A75B005F215D /* DHTSensorMonitorDetailsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHTSensorMonitorDetailsGroup.swift; sourceTree = "<group>"; };
 		AA46F25F291A521F00D35052 /* DHTSensorProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHTSensorProgressView.swift; sourceTree = "<group>"; };
+		AA4C99DC291F5E6600CD18DB /* QuickSensorWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "QuickSensorWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA4C99E1291F5E6600CD18DB /* QuickSensorWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSensorWatchApp.swift; sourceTree = "<group>"; };
+		AA4C99E3291F5E6600CD18DB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AA4C99E5291F5E6700CD18DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA4C99E8291F5E6700CD18DB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		AA4C99F1291F5EFB00CD18DB /* QuickSensorListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSensorListView.swift; sourceTree = "<group>"; };
 		AA5BA7C629058A6000C266AE /* QuickSensor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickSensor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5BA7C929058A6000C266AE /* QuickSensorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSensorApp.swift; sourceTree = "<group>"; };
 		AA5BA7CB29058A6000C266AE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -62,6 +73,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		AA4C99D9291F5E6600CD18DB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA5BA7C329058A6000C266AE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -77,6 +95,26 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AA4C99E0291F5E6600CD18DB /* QuickSensorWatch Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				AA4C99E1291F5E6600CD18DB /* QuickSensorWatchApp.swift */,
+				AA4C99E3291F5E6600CD18DB /* ContentView.swift */,
+				AA4C99F1291F5EFB00CD18DB /* QuickSensorListView.swift */,
+				AA4C99E5291F5E6700CD18DB /* Assets.xcassets */,
+				AA4C99E7291F5E6700CD18DB /* Preview Content */,
+			);
+			path = "QuickSensorWatch Watch App";
+			sourceTree = "<group>";
+		};
+		AA4C99E7291F5E6700CD18DB /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				AA4C99E8291F5E6700CD18DB /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		AA5A8721290AD134002B5F63 /* IlluminanceSensor */ = {
@@ -116,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				AA5BA7C829058A6000C266AE /* QuickSensor */,
+				AA4C99E0291F5E6600CD18DB /* QuickSensorWatch Watch App */,
 				AA5BA7C729058A6000C266AE /* Products */,
 				AA4018A9291BDA8D0096629D /* Frameworks */,
 			);
@@ -125,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				AA5BA7C629058A6000C266AE /* QuickSensor.app */,
+				AA4C99DC291F5E6600CD18DB /* QuickSensorWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -170,6 +210,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		AA4C99DB291F5E6600CD18DB /* QuickSensorWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA4C99EF291F5E6700CD18DB /* Build configuration list for PBXNativeTarget "QuickSensorWatch Watch App" */;
+			buildPhases = (
+				AA4C99D8291F5E6600CD18DB /* Sources */,
+				AA4C99D9291F5E6600CD18DB /* Frameworks */,
+				AA4C99DA291F5E6600CD18DB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "QuickSensorWatch Watch App";
+			productName = "QuickSensorWatch Watch App";
+			productReference = AA4C99DC291F5E6600CD18DB /* QuickSensorWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		AA5BA7C529058A6000C266AE /* QuickSensor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA5BA7D529058A6100C266AE /* Build configuration list for PBXNativeTarget "QuickSensor" */;
@@ -199,6 +256,9 @@
 				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1410;
 				TargetAttributes = {
+					AA4C99DB291F5E6600CD18DB = {
+						CreatedOnToolsVersion = 14.1;
+					};
 					AA5BA7C529058A6000C266AE = {
 						CreatedOnToolsVersion = 14.1;
 					};
@@ -221,11 +281,21 @@
 			projectRoot = "";
 			targets = (
 				AA5BA7C529058A6000C266AE /* QuickSensor */,
+				AA4C99DB291F5E6600CD18DB /* QuickSensorWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		AA4C99DA291F5E6600CD18DB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA4C99E9291F5E6700CD18DB /* Preview Assets.xcassets in Resources */,
+				AA4C99E6291F5E6700CD18DB /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA5BA7C429058A6000C266AE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -239,6 +309,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		AA4C99D8291F5E6600CD18DB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA4C99E4291F5E6600CD18DB /* ContentView.swift in Sources */,
+				AA4C99F2291F5EFB00CD18DB /* QuickSensorListView.swift in Sources */,
+				AA4C99E2291F5E6600CD18DB /* QuickSensorWatchApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA5BA7C229058A6000C266AE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -281,6 +361,67 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		AA4C99ED291F5E6700CD18DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"QuickSensorWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 8GYXTCSZPZ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = QuickSensorWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stv.x.QuickSensorWatch.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Debug;
+		};
+		AA4C99EE291F5E6700CD18DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"QuickSensorWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 8GYXTCSZPZ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = QuickSensorWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stv.x.QuickSensorWatch.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Release;
+		};
 		AA5BA7D329058A6100C266AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -469,6 +610,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		AA4C99EF291F5E6700CD18DB /* Build configuration list for PBXNativeTarget "QuickSensorWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA4C99ED291F5E6700CD18DB /* Debug */,
+				AA4C99EE291F5E6700CD18DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AA5BA7C129058A6000C266AE /* Build configuration list for PBXProject "QuickSensor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
