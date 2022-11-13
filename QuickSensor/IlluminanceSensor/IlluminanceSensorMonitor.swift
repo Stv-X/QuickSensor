@@ -35,6 +35,7 @@ struct IlluminanceSensorMonitor: View {
 #if os(iOS)
                         .bold()
                         .frame(width: 140)
+                        .padding(.horizontal)
 #endif
                 }
                 .padding(.horizontal)
@@ -43,9 +44,15 @@ struct IlluminanceSensorMonitor: View {
                 
                 IlluminanceChart
                 
+                #if os(iOS)
+                    .frame(width: 280, height: 120)
+                #else
                 .frame(width: 500, height: 100)
                 .padding()
+                #endif
+                
             }
+            .padding(.horizontal)
             
             Divider()
             
@@ -60,8 +67,9 @@ struct IlluminanceSensorMonitor: View {
             Spacer()
             
         }
-        
+        #if os(macOS)
         .frame(minWidth: 640, minHeight: 300)
+        #endif
         
         .toolbar {
             ToolbarItem(placement: .navigation) {

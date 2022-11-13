@@ -39,7 +39,7 @@ struct SidebarNavigationList: View {
     
     var DHTSensor: some View {
         VStack(alignment: .leading, spacing: 1) {
-            Text("T&H Sensor")
+            Text("DHT Sensor")
             HStack {
                 HStack(spacing: 2) {
                     HStack(spacing: 0) {

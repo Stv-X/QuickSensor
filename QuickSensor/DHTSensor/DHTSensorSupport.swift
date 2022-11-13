@@ -100,10 +100,57 @@ func randomDHTSensorRawData() -> String {
     return data
 }
 
+func organizedData(from rawData: String) -> OrganizedDHTData {
+    var organizedData = OrganizedDHTData(temperature: TemperatureState(value: 30.0),
+                                         humidity: HumidityState(value: 23.0),
+                                         isVerified: false)
+    
+    let formattedRawData = formattedRawData(from: rawData)
+    
+    var humidityRaw = ""
+    var temperatureRaw = ""
+    
+    humidityRaw = formattedRawData.humidityHigh + formattedRawData.humidityLow
+    temperatureRaw = formattedRawData.temperatureHigh + formattedRawData.temperatureLow
+    
+    organizedData.isVerified = verifiedDHTData(from: formattedRawData)
+    organizedData.humidity.value = Double(humidityRaw.toDec()) / 10
+    organizedData.temperature.value = Double(temperatureRaw.toDHT22Dec()) / 10
+    
+    return organizedData
+}
+
+
+private func formattedRawData(from rawData: String) -> DHTRawData {
+    let splitedRawData = rawData.split(separator: "")
+    var formattedRawData: [Int] = []
+    for i in splitedRawData {
+        formattedRawData.append(Int(i)!)
+    }
+    var rawData = DHTRawData(humidityHigh: "", humidityLow: "", temperatureHigh: "", temperatureLow: "", verifyBit: "")
+    
+    rawData.map(from: formattedRawData)
+    return rawData
+}
+
+private func verifiedDHTData(from rawData: DHTRawData) -> Bool {
+    var data = rawData
+    let a = data.humidityHigh.toDec() + data.humidityLow.toDec() + data.temperatureHigh.toDec() + data.temperatureLow.toDec()
+    
+    let b = data.verifyBit.toDec()
+    
+    if a == b {
+        return true
+    } else {
+        return false
+    }
+}
+
+
 // 将十进制温湿度转换为满足 DHT22 协议的 16 位二进制原始数据字符串
 // 输入: 温湿度的十进制原始数据（比标准单位数据大 10 倍）
 // 例：rawDHTData(of: 386) -> "0000000100001101"
-func rawDHTData(of data: Int) -> String {
+private func rawDHTData(of data: Int) -> String {
     var rawData = ""
     if data < 0 {
         rawData = (-data).binary
@@ -129,7 +176,7 @@ func rawDHTData(of data: Int) -> String {
 
 // 从 16 位二进制原始数据字符串中获取高 8 位
 // 例: highBit(of: "0000000100001101") -> "00000001"
-func highBit(of rawDHTData: String) -> String {
+private func highBit(of rawDHTData: String) -> String {
     var highBit = ""
     
     for i in 0..<8 {
@@ -141,7 +188,7 @@ func highBit(of rawDHTData: String) -> String {
 
 // 从 16 位二进制原始数据字符串中获取低 8 位
 // 例: highBit(of: "0000000100001101") -> "00001101"
-func lowBit(of rawDHTData: String) -> String {
+private func lowBit(of rawDHTData: String) -> String {
     var lowBit = ""
     
     for i in 8..<16 {
@@ -211,3 +258,4 @@ extension String {
     }
     
 }
+

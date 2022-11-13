@@ -59,11 +59,16 @@ struct DHTSensorMonitor: View {
                             .frame(width: 140)
 #endif
                     }
+                    
                     TemperatureChart
                         .padding(.trailing)
                         .frame(height: 80)
                 }
+#if os(iOS)
+                .padding()
+#else
                 .padding(.vertical)
+#endif
                 
                 Divider()
                 GridRow {
@@ -82,9 +87,15 @@ struct DHTSensorMonitor: View {
                         .padding(.trailing)
                         .frame(height: 80)
                 }
-                .padding(.vertical)
-                
+#if os(iOS)
+.padding()
+#else
+.padding(.vertical)
+#endif
             }
+#if os(iOS)
+            .padding(.horizontal)
+#endif
             
             Divider()
             
@@ -369,53 +380,6 @@ struct DHTSensorMonitor: View {
             }
         }
     }
-    
-    // Data Parser Support
-    private func formattedRawData(from rawData: String) -> DHTRawData {
-        let splitedRawData = rawData.split(separator: "")
-        var formattedRawData: [Int] = []
-        for i in splitedRawData {
-            formattedRawData.append(Int(i)!)
-        }
-        var rawData = DHTRawData(humidityHigh: "", humidityLow: "", temperatureHigh: "", temperatureLow: "", verifyBit: "")
-        
-        rawData.map(from: formattedRawData)
-        return rawData
-    }
-    
-    private func organizedData(from rawData: String) -> OrganizedDHTData {
-        var organizedData = OrganizedDHTData(temperature: TemperatureState(value: 30.0),
-                                             humidity: HumidityState(value: 23.0),
-                                             isVerified: false)
-        
-        let formattedRawData = formattedRawData(from: rawData)
-        
-        var humidityRaw = ""
-        var temperatureRaw = ""
-        
-        humidityRaw = formattedRawData.humidityHigh + formattedRawData.humidityLow
-        temperatureRaw = formattedRawData.temperatureHigh + formattedRawData.temperatureLow
-        
-        organizedData.isVerified = verifiedDHTData(from: formattedRawData)
-        organizedData.humidity.value = Double(humidityRaw.toDec()) / 10
-        organizedData.temperature.value = Double(temperatureRaw.toDHT22Dec()) / 10
-        
-        return organizedData
-    }
-    
-    private func verifiedDHTData(from rawData: DHTRawData) -> Bool {
-        var data = rawData
-        let a = data.humidityHigh.toDec() + data.humidityLow.toDec() + data.temperatureHigh.toDec() + data.temperatureLow.toDec()
-        
-        let b = data.verifyBit.toDec()
-        
-        if a == b {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     
     // UI Support
     private func verticalSpacingForHorizontalSizeClass() -> CGFloat {

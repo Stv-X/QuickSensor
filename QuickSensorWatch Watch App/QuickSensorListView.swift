@@ -23,16 +23,19 @@ struct QuickSensorListView: View {
     
     @State private var isDataListeningEnabled = false
     
+    @State private var receivedRawData = ""
+    
     var body: some View {
         List {
             Button {
                 withAnimation {
-                    
                     if focusedSensor == .illuminance {
                         focusedSensor = nil
+                        listener.cancel()
                         isDataListeningEnabled = false
                     } else {
                         focusedSensor = .illuminance
+                        serverConnectAction()
                         isDataListeningEnabled = true
 
                     }
@@ -41,16 +44,18 @@ struct QuickSensorListView: View {
                 IlluminanceSensorListCell
             }
             .listItemTint(focusedSensor == .illuminance ? .white : nil)
-            
+             
             Button {
                 withAnimation {
                     
                     if focusedSensor == .dht {
                         focusedSensor = nil
+                        listener.cancel()
                         isDataListeningEnabled = false
 
                     } else {
                         focusedSensor = .dht
+                        serverConnectAction()
                         isDataListeningEnabled = true
 
                     }
@@ -180,6 +185,81 @@ struct QuickSensorListView: View {
         }
     }
     
+    // Network Support
+    //  服务端开始监听并处理连接
+    private func serverConnectAction() {
+        
+        listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(options.port)!)
+        
+        // 处理新加入的连接
+        listener.newConnectionHandler = { newConnection in
+            newConnection.start(queue: serverQueue)
+            self.receive(on: newConnection)
+            print(newConnection.endpoint)
+        }
+        
+        // 监听连接状态
+        listener.stateUpdateHandler = { newState in
+            switch newState {
+            case .ready:
+                print("Listening on port: \(String(describing: listener.port))")
+                self.isDataListeningEnabled = true
+            case .failed(let error):
+                print("Listener failed with error: \(error)")
+            case .setup:
+                print("state setup")
+            case .cancelled:
+                print("state cancelled")
+                listener.cancel()
+                
+            default:
+                break
+            }
+        }
+        
+        listener.start(queue: serverQueue)
+    }
+    
+    //  服务端接收来自 connection 的数据，并通过解析存入数据库、更新视图上下文
+    private func receive(on connection: NWConnection) {
+        
+        connection.receive(minimumIncompleteLength: .min, maximumLength: .max) { (content, context, isComplete, error) in
+            if content != nil {
+                let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
+                print("received: \(data!)")
+                
+                if (data!.isIlluminanceRawData() && focusedSensor == .illuminance) || (data!.isBinary()) {
+                    receivedRawData = data!
+                    withAnimation {
+                        sensorDataReceiveAction()
+                    }
+                }
+                
+                
+                if isComplete {
+                    //关闭资源
+                    listener.cancel()
+                    return
+                    
+                }
+                
+                if error == nil && isDataListeningEnabled {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + TimeInterval(1)) {
+                        self.receive(on: connection)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func sensorDataReceiveAction() {
+        if focusedSensor == .illuminance {
+            currentIlluminanceSensorState = IlluminanceSensorState(isIlluminated: illuminanceParsedFrom(receivedRawData))
+        } else if focusedSensor == .dht {
+            currentTemperatureState.value = organizedData(from: receivedRawData).temperature.value
+            currentHumidityState.value = organizedData(from: receivedRawData).humidity.value
+        }
+    }
     
 }
 

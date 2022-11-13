@@ -36,7 +36,7 @@ struct QuickSensorOptionsModal: View {
                 Button("Confirm") {
                     if onEditingOptions.port.isNWPort() {
                         options = onEditingOptions
-//                        listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(options.port)!)
+                        listener = try! NWListener(using: .tcp, on: NWEndpoint.Port(options.port)!)
                         isPresented.toggle()
                     } else {
                         isNetworkEndPointPortNumberInvalid = true
