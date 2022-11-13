@@ -9,7 +9,12 @@ import SwiftUI
 import Charts
 import Network
 
+
 struct IlluminanceSensorMonitor: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \IlluminanceData.timestamp, ascending: true)],
+        animation: .default) private var items: FetchedResults<IlluminanceData>
     
     @State private var currentIlluminanceState = IlluminanceSensorState()
     @State private var illuminanceRecords: [IlluminanceRecord] = []
@@ -213,6 +218,23 @@ struct IlluminanceSensorMonitor: View {
                                                                     end: 0,
                                                                     startTime: timestampOfChartBeganPlotting,
                                                                     endTime: timestampOfChartBeganPlotting))
+    }
+    
+    // Core Data Support
+    // 将内容持久化存储到本地数据库中
+    private func addItem() {
+        let newItem = IlluminanceData(context: viewContext)
+        newItem.timestamp = Date()
+        newItem.isIlluminated = currentIlluminanceState.isIlluminated
+        
+        do {
+            try viewContext.save()
+        } catch {
+            // Replace this implementation with code to handle the error appropriately.
+            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
     }
     
     // Network Support

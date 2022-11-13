@@ -18,9 +18,7 @@ struct DHTSensorMonitor: View {
     
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \DHTData.timestamp, ascending: true)],
-        animation: .default)
-    
-    private var items: FetchedResults<DHTData>
+        animation: .default) private var items: FetchedResults<DHTData>
     
     @State private var receivedRawData = "0000001010010010000000010000110110100010"
     

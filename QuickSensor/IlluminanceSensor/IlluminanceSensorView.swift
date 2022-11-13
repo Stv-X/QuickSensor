@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct IlluminanceSensorView: View {
+    @EnvironmentObject var store: NavigationStore
     var body: some View {
         NavigationStack {
             IlluminanceSensorMonitor()

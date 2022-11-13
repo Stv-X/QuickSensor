@@ -8,10 +8,6 @@
 import SwiftUI
 import Network
 
-enum SensorCategory {
-    case illuminance, dht
-}
-
 struct QuickSensorListView: View {
     @State private var focusedSensor: SensorCategory? = nil
     @State private var isOptionsModalPresented = false
