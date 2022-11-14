@@ -36,9 +36,6 @@ struct DHTSensorMonitor: View {
     
     @State public var options = SensorMonitorOptions()
     
-    private let autoRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-    
     var body: some View {
         VStack {
             Grid(alignment: .leading,horizontalSpacing: 20, verticalSpacing: verticalSpacingForHorizontalSizeClass()) {
@@ -86,9 +83,9 @@ struct DHTSensorMonitor: View {
                         .frame(height: 80)
                 }
 #if os(iOS)
-.padding()
+                .padding()
 #else
-.padding(.vertical)
+                .padding(.vertical)
 #endif
             }
 #if os(iOS)
@@ -127,7 +124,7 @@ struct DHTSensorMonitor: View {
         .sheet(isPresented: $isOptionsModalPresented) {
             NavigationStack {
                 SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                             options: $options)
+                                          options: $options)
                 .navigationTitle("Options")
                 .navigationBarTitleDisplayMode(.inline)
             }
@@ -217,7 +214,7 @@ struct DHTSensorMonitor: View {
 #if os(macOS)
         .popover(isPresented: $isOptionsModalPresented) {
             SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                         options: $options)
+                                      options: $options)
         }
 #endif
     }
@@ -267,7 +264,7 @@ struct DHTSensorMonitor: View {
     // 将内容持久化存储到本地数据库中
     private func addItem() {
         let newItem = DHTData(context: viewContext)
-        newItem.timestamp = Date()
+        newItem.timestamp = temperatureRecords.last!.timestamp
         newItem.temperature = Int64(temperatureState.value * 10)
         newItem.humidity = Int64(humidityState.value * 10)
         
@@ -302,6 +299,10 @@ struct DHTSensorMonitor: View {
                 self.isDataListeningEnabled = true
             case .failed(let error):
                 print("Listener failed with error: \(error)")
+                if error == .posix(.EADDRINUSE) {
+                    listener.cancel()
+                    isDataListeningEnabled = false
+                }
             case .setup:
                 print("state setup")
             case .cancelled:
@@ -316,51 +317,18 @@ struct DHTSensorMonitor: View {
         listener.start(queue: serverQueue)
     }
     
-    //  服务端接收来自 connection 的数据，并通过解析存入数据库、更新视图上下文
+    //  服务端接收来自 connection 的数据
     private func receive(on connection: NWConnection) {
-        var maxStorage = 64
-        
-#if os(iOS)
-        if horizontalSizeClass == .compact {
-            maxStorage = 32
-        }
-#endif
         
         connection.receive(minimumIncompleteLength: .min, maximumLength: .max) { (content, context, isComplete, error) in
             if content != nil {
                 let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
                 print("received: \(data!)")
-                if data!.isBinary() && !firstElementIsDirty {
+                if data!.isBinary() {
                     withAnimation {
                         receivedRawData = data!
-                        
-                        temperatureState.value = organizedData(from: receivedRawData).temperature.value
-                        humidityState.value = organizedData(from: receivedRawData).humidity.value
-                        
-                        //如果数据来自同一秒，修改最新的数据，否则添加一个新的数据
-                        if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
-                            temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
-                        } else {
-                            temperatureRecords.append(TemperatureRecord(value: temperatureState.value, timestamp: Date()))
-                        }
-                        
-                        if humidityRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
-                            humidityRecords[humidityRecords.count - 1].value = humidityState.value
-                        } else {
-                            humidityRecords.append(HumidityRecord(value: humidityState.value, timestamp: Date()))
-                        }
-                        
-                        if temperatureRecords.count >= maxStorage {
-                            temperatureRecords.remove(at: 0)
-                        }
-                        if humidityRecords.count >= maxStorage {
-                            humidityRecords.remove(at: 0)
-                        }
-                        
-                        addItem()
-                        
+                        updateDHTItems()
                     }
-                    firstElementIsDirty = false
                 }
                 
                 if isComplete {
@@ -379,7 +347,42 @@ struct DHTSensorMonitor: View {
         }
     }
     
-    // UI Support
+    //  解析从客户端获取到的信息存入数据库、更新视图上下文
+    private func updateDHTItems() {
+        var maxStorage = 64
+#if os(iOS)
+        if horizontalSizeClass == .compact {
+            maxStorage = 32
+        }
+#endif
+        
+        temperatureState.value = organizedData(from: receivedRawData).temperature.value
+        humidityState.value = organizedData(from: receivedRawData).humidity.value
+        
+        //如果数据来自同一秒，修改最新的数据，否则添加一个新的数据
+        if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
+            temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
+        } else {
+            temperatureRecords.append(TemperatureRecord(value: temperatureState.value, timestamp: Date()))
+        }
+        
+        if humidityRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
+            humidityRecords[humidityRecords.count - 1].value = humidityState.value
+        } else {
+            humidityRecords.append(HumidityRecord(value: humidityState.value, timestamp: Date()))
+        }
+        
+        if temperatureRecords.count >= maxStorage {
+            temperatureRecords.remove(at: 0)
+        }
+        if humidityRecords.count >= maxStorage {
+            humidityRecords.remove(at: 0)
+        }
+        
+        addItem()
+    }
+    
+    // User Interface Support
     private func verticalSpacingForHorizontalSizeClass() -> CGFloat {
 #if os(iOS)
         if horizontalSizeClass == .compact {

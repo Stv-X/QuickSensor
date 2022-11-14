@@ -18,8 +18,11 @@ struct QuickSensorOptionsModal: View {
         
         VStack {
             Form {
-                Text("IP")
-                Text(wifiIP!)
+                HStack {
+                    Text("IP")
+                    Spacer()
+                    Text(wifiIP != nil ? wifiIP! : "")
+                }
                 // Port Field
                 HStack {
                     Text("Port")

@@ -9,7 +9,7 @@
 "DHT" = "温/湿度";
 "DHT Sensor" = "温/湿度传感器";
 "Illuminance Sensor" = "光照传感器";
-"Illumination" = "光照";
+"Illuminance" = "光照";
 "Details" = "详细信息";
 "Refresh" = "刷新";
 "Options" = "选项";

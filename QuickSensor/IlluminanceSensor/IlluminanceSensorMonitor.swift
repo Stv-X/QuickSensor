@@ -19,7 +19,7 @@ struct IlluminanceSensorMonitor: View {
     @State private var currentIlluminanceState = IlluminanceSensorState()
     @State private var illuminanceRecords: [IlluminanceRecord] = []
     @State private var illuminanceIntervalRecords: [IlluminanceIntervalRecord] = []
-    @State private var timestampOfChartBeganPlotting = Date()
+    @State private var plotTime = Date()
     
     @State private var receivedRawData = ""
     
@@ -27,7 +27,8 @@ struct IlluminanceSensorMonitor: View {
     
     @State private var isOptionsModalPresented = false
     @State private var isDataListeningEnabled = false
-
+    @State private var isFirstPlot = true
+    
     
     var body: some View {
         VStack {
@@ -49,12 +50,12 @@ struct IlluminanceSensorMonitor: View {
                 
                 IlluminanceChart
                 
-                #if os(iOS)
+#if os(iOS)
                     .frame(width: 280, height: 120)
-                #else
-                .frame(width: 500, height: 100)
-                .padding()
-                #endif
+#else
+                    .frame(width: 500, height: 100)
+                    .padding()
+#endif
                 
             }
             .padding(.horizontal)
@@ -72,9 +73,9 @@ struct IlluminanceSensorMonitor: View {
             Spacer()
             
         }
-        #if os(macOS)
+#if os(macOS)
         .frame(minWidth: 640, minHeight: 300)
-        #endif
+#endif
         
         .toolbar {
             ToolbarItem(placement: .navigation) {
@@ -82,7 +83,6 @@ struct IlluminanceSensorMonitor: View {
             }
             
             ToolbarItemGroup(placement: .primaryAction) {
-                SensorDataRefreshButton
                 OptionsButton
             }
         }
@@ -90,6 +90,11 @@ struct IlluminanceSensorMonitor: View {
         .onAppear {
             onAppearAction()
         }
+        
+        .onDisappear {
+            isFirstPlot = true
+        }
+        
     }
     
     // 􀛭
@@ -111,6 +116,10 @@ struct IlluminanceSensorMonitor: View {
                 listener.cancel()
                 isDataListeningEnabled = false
             } else {
+                if isFirstPlot {
+                    plotTime = Date()
+                    isFirstPlot = false
+                }
                 serverConnectAction()
                 isDataListeningEnabled = true
             }
@@ -210,21 +219,21 @@ struct IlluminanceSensorMonitor: View {
         illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: true),
                                                                     start: 0,
                                                                     end: 0,
-                                                                    startTime: timestampOfChartBeganPlotting,
-                                                                    endTime: timestampOfChartBeganPlotting))
+                                                                    startTime: plotTime,
+                                                                    endTime: plotTime))
         
         illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: false),
                                                                     start: 0,
                                                                     end: 0,
-                                                                    startTime: timestampOfChartBeganPlotting,
-                                                                    endTime: timestampOfChartBeganPlotting))
+                                                                    startTime: plotTime,
+                                                                    endTime: plotTime))
     }
     
     // Core Data Support
     // 将内容持久化存储到本地数据库中
     private func addItem() {
         let newItem = IlluminanceData(context: viewContext)
-        newItem.timestamp = Date()
+        newItem.timestamp = illuminanceRecords.last!.timestamp
         newItem.isIlluminated = currentIlluminanceState.isIlluminated
         
         do {
@@ -258,6 +267,10 @@ struct IlluminanceSensorMonitor: View {
                 self.isDataListeningEnabled = true
             case .failed(let error):
                 print("Listener failed with error: \(error)")
+                if error == .posix(.EADDRINUSE) {
+                    listener.cancel()
+                    isDataListeningEnabled = false
+                }
             case .setup:
                 print("state setup")
             case .cancelled:
@@ -277,11 +290,11 @@ struct IlluminanceSensorMonitor: View {
         
         connection.receive(minimumIncompleteLength: .min, maximumLength: .max) { (content, context, isComplete, error) in
             if content != nil {
-                let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
-                print("received: \(data!)")
+                let data = content!.hexadecimal()
+                print("received: \(data)")
                 
-                if data!.isIlluminanceRawData() {
-                    receivedRawData = data!
+                if data.isIlluminanceRawData() {
+                    receivedRawData = data
                     withAnimation {
                         sensorDataReceiveAction()
                     }
@@ -316,24 +329,24 @@ struct IlluminanceSensorMonitor: View {
         if illuminanceIntervalRecords.count - 2 == 0 {
             illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: currentIlluminanceState,
                                                                         start: 0,
-                                                                        end: timestampOfChartBeganPlotting.distance(to: timestamp),
-                                                                        startTime: timestampOfChartBeganPlotting,
+                                                                        end: plotTime.distance(to: timestamp),
+                                                                        startTime: plotTime,
                                                                         endTime: timestamp))
         } else {
-            illuminanceIntervalRecords[illuminanceIntervalRecords.count - 1].end = timestampOfChartBeganPlotting.distance(to: timestamp)
+            illuminanceIntervalRecords[illuminanceIntervalRecords.count - 1].end = plotTime.distance(to: timestamp)
             illuminanceIntervalRecords[illuminanceIntervalRecords.count - 1].endTime = timestamp
             
             if illuminanceIntervalRecords.last!.state.isIlluminated != currentIlluminanceState.isIlluminated {
                 
                 illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: currentIlluminanceState,
-                                                                            start: timestampOfChartBeganPlotting.distance(to: timestamp),
-                                                                            end: timestampOfChartBeganPlotting.distance(to: Date()),
+                                                                            start: plotTime.distance(to: timestamp),
+                                                                            end: plotTime.distance(to: Date()),
                                                                             startTime: timestamp,
                                                                             endTime: Date()))
             }
         }
         
-        
+        addItem()
     }
     
     private func barMarkColor(record: IlluminanceIntervalRecord) -> Color {

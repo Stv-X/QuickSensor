@@ -125,7 +125,7 @@ var wifiIP: String? {
     guard let firstAddr = ifaddr else {
         return nil
     }
-     
+    
     for ifptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
         let interface = ifptr.pointee
         // Check for IPV4 or IPV6 interface
@@ -142,7 +142,14 @@ var wifiIP: String? {
             }
         }
     }
-     
+    
     freeifaddrs(ifaddr)
     return address
+}
+
+extension Data {
+    func hexadecimal() -> String {
+        return map { String(format: "%02x", $0) }
+            .joined(separator: " ")
+    }
 }

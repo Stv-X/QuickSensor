@@ -13,7 +13,7 @@ struct NavigationDetailView: View {
     var body: some View {
         if let selection = store.selection {
             switch selection {
-            
+                
             case 0:
                 IlluminanceSensorView()
                     .onDisappear {

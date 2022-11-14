@@ -1,5 +1,5 @@
 //
-//  DHTSensorRecords.swift
+//  DHTSensorRecordsView.swift
 //  QuickSensor
 //
 //  Created by 徐嗣苗 on 2022/10/23.
@@ -7,16 +7,12 @@
 
 import SwiftUI
 
-struct DHTSensorRecords: View {
+struct DHTSensorRecordsView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \DHTData.timestamp, ascending: true)],
-        animation: .default)
-    
-    private var items: FetchedResults<DHTData>
-    
-    @State private var selection: String?
+        animation: .default) private var items: FetchedResults<DHTData>
     
     var body: some View {
         Table {
@@ -58,31 +54,10 @@ struct DHTSensorRecords: View {
         } rows: {
             ForEach(items.reversed()) {
                 TableRow($0)
-                    .contextMenu {
-                        Button {
-                            
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
             }
         }
         .frame(minWidth: 340)
     }
-    
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-            
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-    
 }
 
 struct HumidityProgressViewStyle: ProgressViewStyle {
@@ -142,6 +117,6 @@ struct TemperatureProgressViewStyle: ProgressViewStyle {
 
 struct DHTRecordsView_Previews: PreviewProvider {
     static var previews: some View {
-        DHTSensorRecords()
+        DHTSensorRecordsView()
     }
 }

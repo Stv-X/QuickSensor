@@ -18,6 +18,11 @@ struct SensorMonitorOptionsModal: View {
     var body: some View {
         VStack {
             Form {
+                HStack {
+                    Text("IP")
+                    Spacer()
+                    Text(wifiIP != nil ? wifiIP! : "")
+                }
                 // Port Field
                 HStack {
                     Text("Port")

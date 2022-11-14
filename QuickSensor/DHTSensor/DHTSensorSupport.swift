@@ -9,8 +9,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 import Charts
 
-var firstElementIsDirty = false
-
 // 温度等级，用于绘制监视器视图中的动态温度计符号
 enum TemperatureLevel: String, CaseIterable, Identifiable {
     case low
@@ -119,7 +117,6 @@ func organizedData(from rawData: String) -> OrganizedDHTData {
     
     return organizedData
 }
-
 
 private func formattedRawData(from rawData: String) -> DHTRawData {
     let splitedRawData = rawData.split(separator: "")

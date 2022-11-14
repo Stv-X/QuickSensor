@@ -19,7 +19,7 @@ struct DHTSensorView: View {
                 Label("DHT", systemImage: "thermometer.medium")
             }
             
-            DHTSensorRecords()
+            DHTSensorRecordsView()
                 .tabItem {
                     Label("Records", systemImage: "list.bullet.clipboard")
                 }
