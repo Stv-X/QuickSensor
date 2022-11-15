@@ -18,9 +18,11 @@ struct SidebarNavigationList: View {
     
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \DHTData.timestamp, ascending: true)],
-        animation: .default)
+        animation: .default) private var dhtItems: FetchedResults<DHTData>
     
-    private var items: FetchedResults<DHTData>
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \IlluminanceData.timestamp, ascending: true)],
+        animation: .default) private var illuminanceItems: FetchedResults<IlluminanceData>
     
     
     var body: some View {
@@ -49,7 +51,7 @@ struct SidebarNavigationList: View {
 #else
                             .foregroundColor(store.selection == 1 ? .white : .red)
 #endif
-                        Text(items.isEmpty ? "--" : "\(NSNumber(value: Double(items.last!.temperature) / 10))°")
+                        Text(dhtItems.isEmpty ? "--" : "\(NSNumber(value: Double(dhtItems.last!.temperature) / 10))°")
                             .frame(width: 42)
 #if os(macOS)
                             .foregroundColor(store.selection == 1 ? .white : nil)
@@ -63,7 +65,7 @@ struct SidebarNavigationList: View {
 #else
                             .foregroundColor(store.selection == 1 ? .white : .blue)
 #endif
-                        Text(items.isEmpty ? "--" : "\(NSNumber(value: Double(items.last!.humidity) / 10))%")
+                        Text(dhtItems.isEmpty ? "--" : "\(NSNumber(value: Double(dhtItems.last!.humidity) / 10))%")
                             .frame(width: 42)
 #if os(macOS)
                             .foregroundColor(store.selection == 1 ? .white : nil)
@@ -80,10 +82,18 @@ struct SidebarNavigationList: View {
             Text("Illuminance Sensor")
             
             HStack {
-                Image(systemName: "lightbulb.fill")
-                    .foregroundColor(.yellow)
-                    .symbolRenderingMode(.multicolor)
-                Text("Illuminated")
+                
+                if illuminanceItems.isEmpty {
+                    Image(systemName: "lightbulb")
+                        .symbolRenderingMode(.multicolor)
+                    Text("--")
+                } else {
+                    
+                    Image(systemName: illuminanceItems.last!.isIlluminated ? "lightbulb.fill" : "lightbulb")
+                        .foregroundColor(illuminanceItems.last!.isIlluminated ? .yellow : nil)
+                        .symbolRenderingMode(.multicolor)
+                    Text(illuminanceItems.last!.isIlluminated ? "Light" : "Dark")
+                }
             }
             .font(.footnote)
         }

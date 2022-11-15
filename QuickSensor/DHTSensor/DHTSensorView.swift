@@ -10,7 +10,6 @@ import SwiftUI
 struct DHTSensorView: View {
     @EnvironmentObject var store: NavigationStore
     var body: some View {
-        
         TabView {
             NavigationStack {
                 DHTSensorMonitor()
@@ -20,6 +19,7 @@ struct DHTSensorView: View {
             }
             
             DHTSensorRecordsView()
+                .padding()
                 .tabItem {
                     Label("Records", systemImage: "list.bullet.clipboard")
                 }

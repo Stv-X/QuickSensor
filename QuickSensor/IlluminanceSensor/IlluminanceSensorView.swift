@@ -10,25 +10,26 @@ import SwiftUI
 struct IlluminanceSensorView: View {
     @EnvironmentObject var store: NavigationStore
     var body: some View {
-        
-        NavigationStack {
-            TabView {
+        TabView {
+            NavigationStack {
                 IlluminanceSensorMonitor()
-                    .tabItem {
-                        Label("Illuminance", systemImage: "lightbulb")
-                    }
-                IlluminanceSensorRecordsView()
-                    .tabItem {
-                        Label("Records", systemImage: "list.bullet.clipboard")
-                    }
             }
-            .navigationTitle("Illuminance Sensor")
-#if os(macOS)
-            .padding()
-#else
-            .navigationBarTitleDisplayMode(.inline)
-#endif
+            .tabItem {
+                Label("Illuminance", systemImage: "lightbulb")
+            }
+            
+            IlluminanceSensorRecordsView()
+                .padding()
+                .tabItem {
+                    Label("Records", systemImage: "list.bullet.clipboard")
+                }
         }
+        .navigationTitle("Illuminance Sensor")
+#if os(macOS)
+        .padding()
+#else
+        .navigationBarTitleDisplayMode(.inline)
+#endif
     }
 }
 

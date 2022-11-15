@@ -27,6 +27,7 @@ struct IlluminanceSensorMonitor: View {
     
     @State private var isOptionsModalPresented = false
     @State private var isDataListeningEnabled = false
+    
     @State private var isFirstPlot = true
     
     
@@ -38,6 +39,7 @@ struct IlluminanceSensorMonitor: View {
                     Text(currentIlluminanceState.isIlluminated ? "Illuminated" : "Not Illuminated")
                         .font(.system(.title, design: .rounded))
                         .lineLimit(1)
+                        .frame(width: 140)
 #if os(iOS)
                         .bold()
                         .frame(width: 140)
@@ -51,7 +53,8 @@ struct IlluminanceSensorMonitor: View {
                 IlluminanceChart
                 
 #if os(iOS)
-                    .frame(width: 280, height: 120)
+                    .frame(width: 240, height: 120)
+                    .padding(.horizontal)
 #else
                     .frame(width: 500, height: 100)
                     .padding()
@@ -91,9 +94,18 @@ struct IlluminanceSensorMonitor: View {
             onAppearAction()
         }
         
-        .onDisappear {
-            isFirstPlot = true
+#if os(iOS)
+        .toolbarRole(.browser)
+        
+        .sheet(isPresented: $isOptionsModalPresented) {
+            NavigationStack {
+                SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
+                                          options: $options)
+                .navigationTitle("Options")
+                .navigationBarTitleDisplayMode(.inline)
+            }
         }
+#endif
         
     }
     
@@ -113,6 +125,9 @@ struct IlluminanceSensorMonitor: View {
     var SensorDataAutoRefreshButton: some View {
         Button {
             if isDataListeningEnabled {
+                if illuminanceRecords.isEmpty {
+                    isFirstPlot = true
+                }
                 listener.cancel()
                 isDataListeningEnabled = false
             } else {
@@ -158,9 +173,9 @@ struct IlluminanceSensorMonitor: View {
                                       options: $options)
             
         }
-        
-        
 #endif
+        
+        
     }
     
     private var IlluminanceChart: some View {
@@ -216,17 +231,20 @@ struct IlluminanceSensorMonitor: View {
     }
     
     private func onAppearAction() {
-        illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: true),
-                                                                    start: 0,
-                                                                    end: 0,
-                                                                    startTime: plotTime,
-                                                                    endTime: plotTime))
         
-        illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: false),
-                                                                    start: 0,
-                                                                    end: 0,
-                                                                    startTime: plotTime,
-                                                                    endTime: plotTime))
+        if illuminanceIntervalRecords.isEmpty {
+            illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: true),
+                                                                        start: 0,
+                                                                        end: 0,
+                                                                        startTime: plotTime,
+                                                                        endTime: plotTime))
+            
+            illuminanceIntervalRecords.append(IlluminanceIntervalRecord(state: IlluminanceSensorState(isIlluminated: false),
+                                                                        start: 0,
+                                                                        end: 0,
+                                                                        startTime: plotTime,
+                                                                        endTime: plotTime))
+        }
     }
     
     // Core Data Support
@@ -319,8 +337,12 @@ struct IlluminanceSensorMonitor: View {
     
     
     private func sensorDataReceiveAction() {
+        if illuminanceParsedFrom(receivedRawData) == nil {
+            print("NIL")
+            return
+        }
         
-        currentIlluminanceState = IlluminanceSensorState(isIlluminated: illuminanceParsedFrom(receivedRawData))
+        currentIlluminanceState = IlluminanceSensorState(isIlluminated: illuminanceParsedFrom(receivedRawData)!)
         
         let timestamp = Date()
         

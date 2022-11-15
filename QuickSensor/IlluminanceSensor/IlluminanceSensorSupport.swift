@@ -8,6 +8,7 @@
 import Foundation
 import Charts
 
+//  Data Model
 struct IlluminanceSensorState: Equatable {
     init() {
         self.isIlluminated = false
@@ -44,22 +45,14 @@ struct IlluminanceIntervalRecord: Identifiable {
     var id = UUID()
 }
 
-func randomIlluminance() -> Bool {
-    let seed = Int.random(in: 0...1)
-    
-    if seed == 0 {
-        return false
-    } else {
-        return true
-    }
-}
-
-func illuminanceParsedFrom(_ rawValue: String) -> Bool {
+//  Parser
+func illuminanceParsedFrom(_ rawValue: String) -> Bool? {
     if rawValue == "ee cc 02 01 01 00 00 00 00 00 01 00 00 ff" {
         return true
-    } else {
+    } else if rawValue == "ee cc 02 01 01 00 00 00 00 00 00 00 00 ff" {
         return false
     }
+    return nil
 }
 
 extension String {
@@ -72,6 +65,7 @@ extension String {
     }
 }
 
+//  Plot
 struct PlottableMeasurement<UnitType: Unit> {
     var measurement: Measurement<UnitType>
 }

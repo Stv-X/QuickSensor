@@ -28,6 +28,7 @@
 "Records" = "记录";
 "Temperature" = "温度";
 "Humidity" = "湿度";
+"Illuminance State" = "光照状态";
 "Timestamp" = "时间戳";
 "Copy" = "拷贝";
 "Illuminated" = "有光照";

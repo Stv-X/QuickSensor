@@ -14,7 +14,7 @@ enum SensorCategory {
 }
 
 struct SensorMonitorOptions {
-    var port: String = "8080"
+    var port: String = "8899"
 }
 
 // 将字符串拷贝到系统剪贴板

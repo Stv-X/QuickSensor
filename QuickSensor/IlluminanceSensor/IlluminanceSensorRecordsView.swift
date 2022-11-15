@@ -27,8 +27,19 @@ struct IlluminanceSensorRecordsView: View {
             
             
             TableColumn("Illuminance State") {
-                Text($0.isIlluminated ? "Light" : "Dark")
-                
+                if $0.isIlluminated {
+                    HStack {
+                        Image(systemName: "lightbulb.fill")
+                            .foregroundColor(.yellow)
+                            .symbolRenderingMode(.multicolor)
+                        Text("Light")
+                    }
+                } else {
+                    HStack {
+                        Image(systemName: "lightbulb")
+                        Text("Dark")
+                    }
+                }
             }
             .width(min: 80)
             
