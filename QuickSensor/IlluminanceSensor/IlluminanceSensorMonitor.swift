@@ -42,7 +42,6 @@ struct IlluminanceSensorMonitor: View {
                         .frame(width: 140)
 #if os(iOS)
                         .bold()
-                        .frame(width: 140)
                         .padding(.horizontal)
 #endif
                 }
@@ -85,7 +84,7 @@ struct IlluminanceSensorMonitor: View {
                 SensorDataAutoRefreshButton
             }
             
-            ToolbarItemGroup(placement: .primaryAction) {
+            ToolbarItem(placement: .primaryAction) {
                 OptionsButton
             }
         }
@@ -209,7 +208,7 @@ struct IlluminanceSensorMonitor: View {
         }
     }
     
-    //MARK: Detaild Group
+    //MARK: Details Group
     var DetailsGroup: some View {
         GroupBox {
             Text(receivedRawData)
@@ -230,6 +229,8 @@ struct IlluminanceSensorMonitor: View {
         }
     }
     
+    
+    //  Private Functions
     private func onAppearAction() {
         
         if illuminanceIntervalRecords.isEmpty {
