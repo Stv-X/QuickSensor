@@ -9,6 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 import Charts
 
+//  Data Model
 // 温度等级，用于绘制监视器视图中的动态温度计符号
 enum TemperatureLevel: String, CaseIterable, Identifiable {
     case low
@@ -16,6 +17,10 @@ enum TemperatureLevel: String, CaseIterable, Identifiable {
     case high
     
     var id: Self { self }
+}
+
+enum DHTCategory {
+    case temperature, humidity
 }
 
 // 温度记录，为温度柱状图表提供数据
@@ -44,6 +49,12 @@ struct HumidityState: Equatable {
 
 // 整理好的数据，包含温度状态、湿度状态、校验结果
 struct OrganizedDHTData {
+    init() {
+            self.temperature = TemperatureState(value: 30.0)
+            self.humidity = HumidityState(value: 23.0)
+            self.isVerified = false
+        }
+    
     var temperature: TemperatureState
     var humidity: HumidityState
     var isVerified: Bool
@@ -58,50 +69,9 @@ struct DHTRawData {
     var verifyBit: String
 }
 
-// 随机生成满足校验要求的温湿度二进制数据字符串
-func randomDHTSensorRawData() -> String {
-    var data = ""
-    var temperature: Int
-    var humidity: Int
-    
-    var humidityRawData: String
-    var temperatureRawData: String
-    
-    var humidityRawHigh: String
-    var humidityRawLow: String
-    var temperatureRawHigh: String
-    var temperatureRawLow: String
-    
-    repeat {
-        humidity = Int.random(in: 0...1000)
-        temperature = Int.random(in: -200...800)
-        
-        humidityRawData = rawDHTData(of: humidity)
-        temperatureRawData = rawDHTData(of: temperature)
-        
-        humidityRawHigh = highBit(of: humidityRawData)
-        humidityRawLow = lowBit(of: humidityRawData)
-        temperatureRawHigh = highBit(of: temperatureRawData)
-        temperatureRawLow = lowBit(of: temperatureRawData)
-        
-    } while humidityRawHigh.toDec() + humidityRawLow.toDec() + temperatureRawHigh.toDec() + temperatureRawLow.toDec() > 255
-    
-    let verifyBitValue = humidityRawHigh.toDec() + humidityRawLow.toDec() + temperatureRawHigh.toDec() + temperatureRawLow.toDec()
-    
-    var formattedVerifyBitValue = verifyBitValue.binary
-    while formattedVerifyBitValue.count < 8 {
-        formattedVerifyBitValue = "0" + formattedVerifyBitValue
-    }
-    
-    data = humidityRawData + temperatureRawData + formattedVerifyBitValue
-    
-    return data
-}
-
+//  Bin Parser
 func organizedData(from rawData: String) -> OrganizedDHTData {
-    var organizedData = OrganizedDHTData(temperature: TemperatureState(value: 30.0),
-                                         humidity: HumidityState(value: 23.0),
-                                         isVerified: false)
+    var organizedData = OrganizedDHTData()
     
     let formattedRawData = formattedRawData(from: rawData)
     
@@ -256,3 +226,76 @@ extension String {
     
 }
 
+
+//  Hex Parser
+
+func organizedData(fromHex str: String) -> OrganizedDHTData {
+    
+    var organizedData = OrganizedDHTData()
+    organizedData.humidity.value = getBinFromDhtHex(str, as: .humidity)
+    organizedData.temperature.value = getBinFromDhtHex(str, as: .temperature)
+    organizedData.isVerified = true
+    
+    return organizedData
+}
+
+func getBinFromDhtHex(_ hexStr: String, as category: DHTCategory) -> Double {
+    
+    var n = 0
+    let splitedStr = hexStr.split(separator: "")
+    var targetHexStr = ""
+    
+    switch category {
+    case .humidity:
+        n = 21
+    case .temperature:
+        n = 27
+    }
+    
+    for i in n..<n + 5 {
+        if splitedStr[i] != " " {
+            targetHexStr.append(String(splitedStr[i]))
+        }
+    }
+
+    let targetHexSubStr = targetHexStr.split(separator: "")
+    
+    var targetHex: [Int] = []
+    
+    for subStr in targetHexSubStr {
+        if Int(String(subStr)) != nil {
+            targetHex.append(Int(subStr)!)
+        } else {
+            var a = subStr.hexChar2Dec()
+            if a != 0 {
+                targetHex.append(a)
+            }
+        }
+    }
+    
+    let result = targetHex[0] * 512 + targetHex[1] * 256 + targetHex[2] * 16 + targetHex[3] * 1
+    
+    return Double(result) / 10
+    
+}
+
+extension Substring {
+    func hexChar2Dec() -> Int {
+        switch self {
+        case "a":
+            return 10
+        case "b":
+            return 11
+        case "c":
+            return 12
+        case "d":
+            return 13
+        case "e":
+            return 14
+        case "f":
+            return 15
+        default:
+            return 0
+        }
+    }
+}

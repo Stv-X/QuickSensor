@@ -178,15 +178,13 @@ struct IlluminanceSensorMonitor: View {
     }
     
     private var IlluminanceChart: some View {
-        Chart(illuminanceIntervalRecords) { record in
-            
+        Chart(illuminanceIntervalRecords) {
             BarMark(
-                xStart: .value("Start Time", record.start),
-                xEnd: .value("End Time", record.end),
-                y: .value("Record", record.stateStr)
+                xStart: .value("Start Time", $0.start),
+                xEnd: .value("End Time", $0.end),
+                y: .value("Record", $0.stateStr)
             )
-            .foregroundStyle(record.state.isIlluminated ? .yellow : .indigo)
-            
+            .foregroundStyle($0.state.isIlluminated ? .yellow : .indigo)
         }
         
         .chartXAxis {
@@ -230,7 +228,6 @@ struct IlluminanceSensorMonitor: View {
     }
     
     
-    //  Private Functions
     private func onAppearAction() {
         
         if illuminanceIntervalRecords.isEmpty {
@@ -258,8 +255,6 @@ struct IlluminanceSensorMonitor: View {
         do {
             try viewContext.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
@@ -319,14 +314,6 @@ struct IlluminanceSensorMonitor: View {
                     }
                 }
                 
-                
-                if isComplete {
-                    //关闭资源
-                    listener.cancel()
-                    return
-                    
-                }
-                
                 if error == nil && isDataListeningEnabled {
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + TimeInterval(1)) {
                         self.receive(on: connection)
@@ -370,15 +357,6 @@ struct IlluminanceSensorMonitor: View {
         }
         
         addItem()
-    }
-    
-    private func barMarkColor(record: IlluminanceIntervalRecord) -> Color {
-        if record.state.isIlluminated {
-            return .yellow
-            
-        } else {
-            return .indigo
-        }
     }
     
 }
