@@ -9,7 +9,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 import Charts
 
-//  Data Model
 // 温度等级，用于绘制监视器视图中的动态温度计符号
 enum TemperatureLevel: String, CaseIterable, Identifiable {
     case low
@@ -23,6 +22,7 @@ enum DHTCategory {
     case temperature, humidity
 }
 
+//  Data Model
 // 温度记录，为温度柱状图表提供数据
 struct TemperatureRecord: Identifiable {
     var value: Double
@@ -228,22 +228,21 @@ extension String {
 
 
 //  Hex Parser
-
 func organizedData(fromHex str: String) -> OrganizedDHTData {
     
     var organizedData = OrganizedDHTData()
-    organizedData.humidity.value = getBinFromDhtHex(str, as: .humidity)
-    organizedData.temperature.value = getBinFromDhtHex(str, as: .temperature)
+    organizedData.humidity.value = getDataFromDhtHex(str, using: .humidity)
+    organizedData.temperature.value = getDataFromDhtHex(str, using: .temperature)
     organizedData.isVerified = true
     
     return organizedData
 }
 
-func getBinFromDhtHex(_ hexStr: String, as category: DHTCategory) -> Double {
-    
+func getDataFromDhtHex(_ hexStr: String, using category: DHTCategory) -> Double {
     var n = 0
     let splitedStr = hexStr.split(separator: "")
-    var targetHexStr = ""
+    var targetHexSubStr: [Substring] = []
+    var targetHex: [Int] = []
     
     switch category {
     case .humidity:
@@ -254,19 +253,15 @@ func getBinFromDhtHex(_ hexStr: String, as category: DHTCategory) -> Double {
     
     for i in n..<n + 5 {
         if splitedStr[i] != " " {
-            targetHexStr.append(String(splitedStr[i]))
+            targetHexSubStr.append(splitedStr[i])
         }
     }
-
-    let targetHexSubStr = targetHexStr.split(separator: "")
-    
-    var targetHex: [Int] = []
     
     for subStr in targetHexSubStr {
-        if Int(String(subStr)) != nil {
-            targetHex.append(Int(subStr)!)
+        if let value = Int(subStr) {
+            targetHex.append(value)
         } else {
-            var a = subStr.hexChar2Dec()
+            let a = subStr.hexChar2Dec()
             if a != 0 {
                 targetHex.append(a)
             }
@@ -276,7 +271,6 @@ func getBinFromDhtHex(_ hexStr: String, as category: DHTCategory) -> Double {
     let result = targetHex[0] * 512 + targetHex[1] * 256 + targetHex[2] * 16 + targetHex[3] * 1
     
     return Double(result) / 10
-    
 }
 
 extension Substring {
@@ -284,16 +278,29 @@ extension Substring {
         switch self {
         case "a":
             return 10
+        case "A":
+            return 10
         case "b":
+            return 11
+        case "B":
             return 11
         case "c":
             return 12
+        case "C":
+            return 12
         case "d":
+            return 13
+        case "D":
             return 13
         case "e":
             return 14
+        case "E":
+            return 14
         case "f":
             return 15
+        case "F":
+            return 15
+            
         default:
             return 0
         }

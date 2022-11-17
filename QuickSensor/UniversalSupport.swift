@@ -13,8 +13,13 @@ enum SensorCategory {
     case illuminance, dht
 }
 
+enum DataCategory {
+    case hex, utf8
+}
+
 struct SensorMonitorOptions {
     var port: String = "8899"
+    var isListeningHex = false
 }
 
 // 将字符串拷贝到系统剪贴板

@@ -23,7 +23,7 @@ struct IlluminanceSensorMonitor: View {
     
     @State private var receivedRawData = ""
     
-    @State public var options = SensorMonitorOptions()
+    @State public var options = SensorMonitorOptions(isListeningHex: true)
     
     @State private var isOptionsModalPresented = false
     @State private var isDataListeningEnabled = false
@@ -99,7 +99,8 @@ struct IlluminanceSensorMonitor: View {
         .sheet(isPresented: $isOptionsModalPresented) {
             NavigationStack {
                 SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                          options: $options)
+                                          options: $options,
+                                          isHexToggleDisabled: .constant(true))
                 .navigationTitle("Options")
                 .navigationBarTitleDisplayMode(.inline)
             }
@@ -169,7 +170,8 @@ struct IlluminanceSensorMonitor: View {
         .popover(isPresented: $isOptionsModalPresented) {
             
             SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                      options: $options)
+                                      options: $options,
+                                      isHexToggleDisabled: .constant(true))
             
         }
 #endif

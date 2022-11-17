@@ -34,6 +34,8 @@ struct DHTSensorMonitor: View {
     
     @State private var isNetworkEndPointPortNumberInvalid = false
     
+    @State private var isListeningHex = false
+    
     @State public var options = SensorMonitorOptions()
     
     var body: some View {
@@ -124,7 +126,8 @@ struct DHTSensorMonitor: View {
         .sheet(isPresented: $isOptionsModalPresented) {
             NavigationStack {
                 SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                          options: $options)
+                                          options: $options,
+                                          isHexToggleDisabled: .constant(false))
                 .navigationTitle("Options")
                 .navigationBarTitleDisplayMode(.inline)
             }
@@ -214,7 +217,8 @@ struct DHTSensorMonitor: View {
 #if os(macOS)
         .popover(isPresented: $isOptionsModalPresented) {
             SensorMonitorOptionsModal(isPresented: $isOptionsModalPresented,
-                                      options: $options)
+                                      options: $options,
+                                      isHexToggleDisabled: .constant(false))
         }
 #endif
     }
@@ -271,8 +275,6 @@ struct DHTSensorMonitor: View {
         do {
             try viewContext.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
@@ -322,20 +324,25 @@ struct DHTSensorMonitor: View {
         
         connection.receive(minimumIncompleteLength: .min, maximumLength: .max) { (content, context, isComplete, error) in
             if content != nil {
-                let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
-                print("received: \(data!)")
-                if data!.isBinary() {
-                    withAnimation {
-                        receivedRawData = data!
-                        updateDHTItems()
-                    }
-                }
-                
-                if isComplete {
-                    //关闭资源
-                    listener.cancel()
-                    return
+                switch options.isListeningHex {
+                case true:
+                    let data = content!.hexadecimal()
+                    print("received: \(data)")
                     
+                    withAnimation {
+                        receivedRawData = data
+                        updateDHTItems(using: .hex)
+                    }
+                    
+                case false:
+                    let data = String(data: content ?? "".data(using: .utf8)!, encoding: .utf8)
+                    print("received: \(data!)")
+                    if data!.isBinary() {
+                        withAnimation {
+                            receivedRawData = data!
+                            updateDHTItems(using: .utf8)
+                        }
+                    }
                 }
                 
                 if error == nil && isDataListeningEnabled {
@@ -348,17 +355,29 @@ struct DHTSensorMonitor: View {
     }
     
     //  解析从客户端获取到的信息存入数据库、更新视图上下文
-    private func updateDHTItems() {
+    private func updateDHTItems(using category: DataCategory) {
+        
+        switch category {
+        case .hex:
+            temperatureState.value = organizedData(fromHex: receivedRawData).temperature.value
+            humidityState.value = organizedData(fromHex: receivedRawData).humidity.value
+        case .utf8:
+            temperatureState.value = organizedData(from: receivedRawData).temperature.value
+            humidityState.value = organizedData(from: receivedRawData).humidity.value
+        }
+        
+        updateChart()
+        
+        addItem()
+    }
+    
+    private func updateChart() {
         var maxStorage = 64
 #if os(iOS)
         if horizontalSizeClass == .compact {
             maxStorage = 32
         }
 #endif
-        
-        temperatureState.value = organizedData(from: receivedRawData).temperature.value
-        humidityState.value = organizedData(from: receivedRawData).humidity.value
-        
         //如果数据来自同一秒，修改最新的数据，否则添加一个新的数据
         if temperatureRecords.last?.timestamp.formatted(date: .omitted, time: .standard) == Date().formatted(date: .omitted, time: .standard) {
             temperatureRecords[temperatureRecords.count - 1].value = temperatureState.value
@@ -378,9 +397,8 @@ struct DHTSensorMonitor: View {
         if humidityRecords.count >= maxStorage {
             humidityRecords.remove(at: 0)
         }
-        
-        addItem()
     }
+    
     
     // User Interface Support
     private func verticalSpacingForHorizontalSizeClass() -> CGFloat {

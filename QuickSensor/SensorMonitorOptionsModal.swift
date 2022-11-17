@@ -11,6 +11,7 @@ import Network
 struct SensorMonitorOptionsModal: View {
     @Binding var isPresented: Bool
     @Binding var options: SensorMonitorOptions
+    @Binding var isHexToggleDisabled: Bool
     @State private var onEditingOptions = SensorMonitorOptions()
     @State private var isNetworkEndPointPortNumberInvalid: Bool = false
     
@@ -32,6 +33,9 @@ struct SensorMonitorOptionsModal: View {
                         .frame(width: 100)
                 }
                 .frame(maxHeight: 20)
+                
+                Toggle("HEX", isOn: $onEditingOptions.isListeningHex)
+                    .disabled(isHexToggleDisabled)
                 
             }
             .formStyle(.grouped)
