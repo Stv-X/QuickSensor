@@ -34,9 +34,9 @@ struct DHTSensorMonitor: View {
     
     @State private var isNetworkEndPointPortNumberInvalid = false
     
-    @State private var isListeningHex = false
+    @State private var isListeningHex = true
     
-    @State public var options = SensorMonitorOptions()
+    @State public var options = SensorMonitorOptions(isListeningHex: true)
     
     var body: some View {
         VStack {
@@ -96,11 +96,15 @@ struct DHTSensorMonitor: View {
             
             Divider()
             
-            DisclosureGroup("Details") {
-                DHTSensorMonitorDetailsGroup(receivedRawData: $receivedRawData)
-                    .padding(.vertical)
+            if isListeningHex {
+                
+            } else {
+                DisclosureGroup("Details") {
+                    DHTSensorMonitorDetailsGroup(receivedRawData: $receivedRawData)
+                        .padding(.vertical)
+                }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
             Spacer()
         }
         .frame(minWidth: 390, idealHeight: 300)
